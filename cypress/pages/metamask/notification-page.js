@@ -45,6 +45,7 @@ const gasLimitArrowDownButton = `${confirmPageGasFeeSection} .advanced-gas-input
 const totalLabel = `${confirmPageContent} div:nth-child(2) > .confirm-detail-row .currency-display-component__text`;
 const rejectButton = `${confirmPageContent} [data-testid="page-container-footer-cancel"]`;
 const confirmButton = `${confirmPageContent} [data-testid="page-container-footer-next"]`;
+const rejectButton_cypress = '[data-testid="page-container-footer-cancel"]'
 module.exports.confirmPageElements = {
   notificationPage,
   confirmPageHeader,
@@ -60,6 +61,7 @@ module.exports.confirmPageElements = {
   totalLabel,
   rejectButton,
   confirmButton,
+  rejectButton_cypress
 };
 
 const confirmEncryptionPublicKeyButton = `${notificationPage} .request-encryption-public-key__footer__sign-button`;
