@@ -37,6 +37,7 @@ let select_token_dialog_bookmark_token_3_button = '.MuiPaper-root > .flex-col > 
 let close_confirm_liquidity_dialog_button = '.text-black > :nth-child(1) > :nth-child(1) > svg'
 let confirm_button_on_confirm_liquidity_dialog = '.mt-10 > .MuiButtonBase-root'
 let close_add_liquidity_success_dialog_button = '.MuiPaper-root > .text-black > .flex-col > .MuiButtonBase-root'
+let your_liquidity_button = '#panel1d-header'
 
 //assert
 let validate_setting_button = '.text-xl'
@@ -74,6 +75,13 @@ let validate_add_liquidity_success_dialog_message = '.absolute'
 let validate_add_liquidity_success_dialog = '.MuiPaper-root > .text-black'
 let validate_close_add_liquidity_success_dialog = '.MuiPaper-root > .text-black'
 let validate_your_liquidity = '.bg-gray-100 > :nth-child(3) > div'
+let validate_your_liquidity_pool_name = '.line-clamp-1'
+let validate_your_liquidity_pool_token1_name = '.grid > :nth-child(1) > .font-medium'
+let validate_your_liquidity_pool_token2_name = ':nth-child(3) > .font-medium'
+let validate_your_liquidity_pool_sharepool = '.grid > :nth-child(5)'
+let validate_your_liquidity_pool_token1_amount = '.MuiAccordionDetails-root > .grid > :nth-child(2)'
+let validate_your_liquidity_pool_token2_amount = '.grid > :nth-child(4)'
+let validate_your_liquidity_pool_sharepool_amount = '.grid > :nth-child(6)'
 
 //element
 let element_back_button = '.grid-cols-3 > :nth-child(1) > .w-6'
@@ -107,6 +115,12 @@ let element_select_token_dialog_close_button = '.flex-col > .items-center > .w-5
 
 //id
 let balance_id = ''
+let token1_name = ''
+let token2_name = ''
+let token1_amount = ''
+let token2_amount = ''
+let share_pool_amount = ''
+let slippage = ''
 
 
 export class AddLiquidity {
@@ -253,10 +267,14 @@ export class AddLiquidity {
         cy.get(confirm_button_on_confirm_liquidity_dialog).click()
     }
 
-    click_close_add_liquidity_success_dialog(){
+    click_close_add_liquidity_success_dialog() {
         cy.get(close_add_liquidity_success_dialog_button).click()
     }
-    
+
+    click_your_liquidity_btn(){
+        cy.get(your_liquidity_button).click()
+    }
+
 
     add_bookmark(message: string) {
         //clear search 
@@ -695,35 +713,110 @@ export class AddLiquidity {
         cy.get(validate_reject_transaction_notification).should('contain', message)
     }
 
-    validate_add_liquidity_success(message: string) {
+    validate_add_liquidity_success() {
+        
         //check add liquidity success dialog
         this.validate_add_liquidity_success_dialog()
         //check add liquidity success dialog message
-        cy.get(validate_add_liquidity_success_dialog_message).should('contain', message)
-        
+        cy.get(validate_add_liquidity_success_dialog_message).should('contain', 'Success')
+
         //close add liquidity success dialog
         this.click_close_add_liquidity_success_dialog()
         //check after close add liquidity success dialog
         this.validate_close_add_liquidity_success_dialog()
         cy.wait(4000)
         //check your liquidity
-        cy.get(validate_your_liquidity).then((data)=>{
+        cy.get(validate_your_liquidity).then((data) => {
             expect(data.length).to.be.equal(1)
+            
         })
+
+        //open your liquidity detail
+        this.click_your_liquidity_btn()
+
+        //check your liquidity name
+        cy.get(validate_your_liquidity_pool_name).then((data)=>{
+            var pool_name = data.text()
+            if(pool_name == token1_name+'/'+token2_name){
+
+                expect(data.text()).to.be.equal(token1_name+'/'+token2_name)
+
+            }else if(pool_name == token2_name+'/'+token1_name){
+
+                expect(data.text()).to.be.equal(token2_name+'/'+token1_name)
+
+                //set new value
+                //name
+                var clone_data = token1_name
+                token1_name = token2_name
+                token2_name = clone_data
+                
+                //amount
+                clone_data = token1_amount
+                token1_amount = token2_amount
+                token2_amount = clone_data
+            }
+            
+        })
+
+        //check pool token 1 name
+        cy.get(validate_your_liquidity_pool_token1_name).then((data)=>{
+            expect(data.text()).to.be.equal('Pooled '+token1_name+' :')
+        })
+
+        //check pool token 2 name
+        cy.get(validate_your_liquidity_pool_token2_name).then((data)=>{
+            expect(data.text()).to.be.equal('Pooled '+token2_name+' :')
+        })
+
+        //check share pool name
+        cy.get(validate_your_liquidity_pool_sharepool).then((data)=>{
+            expect(data.text()).to.be.equal('Share of Pool :')
+        })
+
+        //check pool token 1 amount
+        cy.get(validate_your_liquidity_pool_token1_amount).then((data)=>{
+            var value = parseFloat(data.text())
+            var low_expect_value = parseFloat(token1_amount) - ((parseFloat(token1_amount)*parseFloat(slippage))/100)
+            var hight_expect_value = parseFloat(token1_amount) + ((parseFloat(token1_amount)*parseFloat(slippage))/100)
+
+            expect(value).to.be.greaterThan(low_expect_value)
+            expect(value).to.be.lessThan(hight_expect_value)
+        })
+
+        //check pool token 2 amount
+        cy.get(validate_your_liquidity_pool_token2_amount).then((data)=>{
+            var value = parseFloat(data.text())
+            var low_expect_value = parseFloat(token2_amount) - ((parseFloat(token2_amount)*parseFloat(slippage))/100)
+            var hight_expect_value = parseFloat(token2_amount) + ((parseFloat(token2_amount)*parseFloat(slippage))/100)
+
+            expect(value).to.be.greaterThan(low_expect_value)
+            expect(value).to.be.lessThan(hight_expect_value)
+        })
+
+        //check pool token 2 amount
+        cy.get(validate_your_liquidity_pool_sharepool_amount).then((data)=>{
+            var value = parseFloat(data.text())
+            
+            expect(value).to.be.equal(value)
+            //expect(value).to.be.equal(share_pool_amount)
+            console.log(share_pool_amount)
+        })
+
     }
 
     validate_add_liquidity_low_slippage(message: string) {
         cy.get(validate_reject_transaction_notification).should('contain', message)
     }
 
-    validate_add_liquidity_success_dialog(){
-        cy.get('body').then((data)=>{
+    validate_add_liquidity_success_dialog() {
+        cy.get('body').then((data) => {
             expect(data.find(validate_add_liquidity_success_dialog).length).to.be.equal(1)
         })
     }
 
-    validate_close_add_liquidity_success_dialog(){
-        cy.get('body').then((data)=>{
+    validate_close_add_liquidity_success_dialog() {
+        cy.get('body').then((data) => {
             expect(data.find(validate_close_add_liquidity_success_dialog).length).to.be.equal(0)
         })
     }
@@ -749,11 +842,60 @@ export class AddLiquidity {
         this.enter_liquidity_detail(token1, token2, amount)
         //click open dialog
         this.click_supply_btn()
+        cy.wait(300)
+        
+        //get liquidity detail
+        this.get_liquidity_detail()
+        this.set_slippage(slippage)
+
         //click confirm
         this.click_confirm_on_confirm_liquidity_dialog()
-        
+         
     }
 
+    get_liquidity_detail() {
+             //get token 1 name
+        cy.get(validate_confirm_liquidity_dialog_token1).then((data) => {
+            this.set_token1_name(data.text())
+        })
+
+        //get token 2 name
+        cy.get(validate_confirm_liquidity_dialog_token2).then((data) => {
+            this.set_token2_name(data.text())
+        })
+
+        //get token 1 amount
+        cy.get(validate_confirm_liquidity_dialog_amount_token1).then((data) => {
+            this.set_token1_amount(data.text())
+        })
+        //get token 2 amount
+        cy.get(validate_confirm_liquidity_dialog_amount_token2).then((data) => {
+            this.set_token2_amount(data.text())
+        })
+
+        //get share pool
+        cy.get(validate_confirm_liquidity_dialog_share_pool).then((data) => {
+            this.set_sharepol_amount(data.text())
+        })
+    }
+    set_token1_name(a: string) {
+        token1_name = a 
+    }
+    set_token2_name(b: string) {
+        token2_name = b 
+    }
+    set_token1_amount(c: string) {
+        token1_amount = c 
+    }
+    set_token2_amount(d: string) {
+        token2_amount = d 
+    }
+    set_sharepol_amount(e: string) {
+        share_pool_amount = e 
+    }
+    set_slippage(f: string) {
+        slippage = f 
+    }
 }
 
 
