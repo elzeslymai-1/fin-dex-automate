@@ -537,7 +537,7 @@ describe('Login Page', () => {
                 element_swap.validate_textbox_currency1('')
             })
         })
-        context.skip('Check select currency1 & currency2',() => {
+        context('Check select currency1 & currency2',() => {
             //select kusdt & kusdc
             it('select kusdt & kusdc',()=>{
                 //Assert

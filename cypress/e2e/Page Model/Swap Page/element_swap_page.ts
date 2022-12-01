@@ -230,3 +230,6 @@ export class Element_swap_page {
     }
 
 }
+export class validateswappage{
+    
+}
