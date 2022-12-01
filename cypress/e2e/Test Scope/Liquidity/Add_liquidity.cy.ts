@@ -922,7 +922,7 @@ describe('Confirm Liquidity Dialog', () => {
 })
 
 
-describe('Add Liquidity Flow Test', () => {
+describe.only('Add Liquidity Flow Test', () => {
     beforeEach(() => {
         cy.viewport(1920, 1080)
         cy.visit(base_url)
@@ -940,7 +940,7 @@ describe('Add Liquidity Flow Test', () => {
 
     it('Insuffecien Token 1 Balance',()=>{
         //input token detail
-        addLiquidity.enter_liquidity_detail('KUB', 'KUSDT', '10')
+        addLiquidity.enter_liquidity_detail('KUB', 'KUSDT', '100')
         //Check enable token
         addLiquidity.eneble_token()
         //assert
@@ -949,7 +949,7 @@ describe('Add Liquidity Flow Test', () => {
 
     it('Insuffecien Token 2 Balance',()=>{
         //input token detail
-        addLiquidity.enter_liquidity_detail('KUSDC', 'KUB', '10')        
+        addLiquidity.enter_liquidity_detail('KUSDC', 'KUB', '10000')        
         //Check enable token
         addLiquidity.eneble_token()
 
@@ -976,7 +976,7 @@ describe('Add Liquidity Flow Test', () => {
         cy.confirmMetamaskTransaction()
         //assert
         cy.wait(25000)
-        addLiquidity.validate_add_liquidity_success('Success')
+        addLiquidity.validate_add_liquidity_success()
     })
 
     it.skip('Add Liquidity Success With Slippage 0.1%',()=>{
@@ -986,7 +986,7 @@ describe('Add Liquidity Flow Test', () => {
         cy.confirmMetamaskTransaction()
         //assert
         cy.wait(25000)
-        addLiquidity.validate_add_liquidity_success('Success')
+        addLiquidity.validate_add_liquidity_success()
     })
 
     it.skip('Add Liquidity Success With Slippage 0.5%',()=>{
@@ -996,7 +996,7 @@ describe('Add Liquidity Flow Test', () => {
         cy.confirmMetamaskTransaction()
         //assert
         cy.wait(25000)
-        addLiquidity.validate_add_liquidity_success('Success')
+        addLiquidity.validate_add_liquidity_success()
     })
 
     it.skip('Add Liquidity Success With Slippage 1%',()=>{
@@ -1006,17 +1006,29 @@ describe('Add Liquidity Flow Test', () => {
         cy.confirmMetamaskTransaction()
         //assert
         cy.wait(25000)
-        addLiquidity.validate_add_liquidity_success('Success')
+        addLiquidity.validate_add_liquidity_success()
     })
 
     it('Add Liquidity Success With Custom Slippage 90%',()=>{
         //liquidity detail
-        addLiquidity.add_liquidity_pool('KUSDC','KUSDT','100','90')
+        addLiquidity.add_liquidity_pool('KUSDC','KUSDT','1000','90')
         cy.wait(3000)
         cy.confirmMetamaskTransaction()
         //assert
         cy.wait(25000)
-        addLiquidity.validate_add_liquidity_success('Success')
+        
+        addLiquidity.validate_add_liquidity_success()
+    })
+
+    it.skip('Add Liquidity Success With Custom Slippage 90%',()=>{
+        //liquidity detail
+        addLiquidity.add_liquidity_pool('KUSDC','KUB','500','90')
+        cy.wait(3000)
+        cy.confirmMetamaskTransaction()
+        //assert
+        cy.wait(25000)
+        
+        addLiquidity.validate_add_liquidity_success()
     })
 
     after(()=>{
