@@ -7,9 +7,7 @@ let slip_close_button ='.flex-col>.items-center>.w-5'
 let kub_button = '#token-KUB > .flex > .ml-1'
 let kusdt_button = '#token-KUSDT > .flex > .ml-1'
 let kusdc_button = '#token-KUSDC > .flex > .ml-1'
-let currency_kub_button = '.grid > :nth-child(1) > .flex > .ml-4'
-let currency_kusdt_button = ':nth-child(2) > .flex > .ml-4'
-let currency_kusdc_button = ':nth-child(3) > .flex > .ml-4'
+let select_currency_token = '.MuiPaper-root > .flex-col > .grid'
 let swap_button = ':nth-child(2) > .MuiButtonBase-root'
 let cf_confirm_button = '.mt-10 > .MuiButtonBase-root > .font-bold'
 let cf_close_button = '.text-black > :nth-child(1) > :nth-child(1)>.w-5'
@@ -19,10 +17,10 @@ let currency1 = ':nth-child(1) > .bg-input-primary'
 let slip4_textbox = '.bg-transparent'
 
 //validate
-let validate_swap_token1 = '.mt-4 > .items-center > .text-base > :nth-child(1)'
-let validate_swap_token2 = '.mt-4 > .items-center > .text-base > :nth-child(3)'
-let validate_swap_grap_token1 = ':nth-child(4) > .text-sm > :nth-child(3)'
-let validate_swap_grap_token2 = ':nth-child(4) > .text-sm > :nth-child(5)'
+let validate_swap_token1 = ':nth-child(4) > .text-sm > :nth-child(3)'
+let validate_swap_token2 = ':nth-child(4) > .text-sm > :nth-child(5)'
+let validate_swap_grap_token = '.items-center.space-x-1 >[class="dark:text-white"]'
+
 let validate_textbox_currency2 = ':nth-child(3) > .bg-input-primary'
 let validate_rate = '.mt-12 > :nth-child(4) > .text-sm > :nth-child(2)'
 let validate_min_received = '[id="minimum received"]> .font-semibold > :nth-child(1)'
@@ -55,6 +53,10 @@ export class Swap_page {
     clickslipclose(){
         cy.get(slip_close_button).click()
     }
+    select_currency_token(token:string){
+        cy.get(select_currency_token).contains(token).click()
+        cy.wait(2000)
+    }
     clickkub(){
         cy.get(kub_button).click()
     }
@@ -64,23 +66,11 @@ export class Swap_page {
     clickkusdc(){
         cy.get(kusdc_button).click()
     }
-    clickcr_kub(){
-        cy.get(currency_kub_button).click()
-        cy.wait(1500)
-    }
-    clickcr_kusdt(){
-        cy.get(currency_kusdt_button).click()
-        cy.wait(1500)
-    }
-    clickcr_kusdc(){
-        cy.get(currency_kusdc_button).click()
-        cy.wait(1500)
-    }
     clickswap(){
         cy.get(swap_button).click()
     }
     click_cfconfirm(){
-        cy.get(cf_confirm_button).click()
+        cy.get(cf_confirm_button).dblclick()
     }
     click_cfclose(){
         cy.get(cf_close_button).click()
@@ -100,8 +90,8 @@ export class Swap_page {
     validate_swappage1(tk1: string, tk2:string, gtk1:string, gtk2:string, cy2:string, r:string, minre:string, pim:string, pfee:string){
         cy.get(validate_swap_token1).should('have.text',tk1)
         cy.get(validate_swap_token2).should('have.text',tk2)
-        cy.get(validate_swap_grap_token1).should('have.text',gtk1)
-        cy.get(validate_swap_grap_token2).should('have.text',gtk2)
+        cy.get(validate_swap_grap_token).should('have.text',gtk1)
+        cy.get(validate_swap_grap_token).should('have.text',gtk2)
         cy.get(validate_textbox_currency2).should('value',cy2)
         cy.get(validate_rate).should('have.text',r)
         cy.get(validate_min_received).should('contain',minre)
@@ -120,5 +110,121 @@ export class Swap_page {
         cy.get(validate_cf_price_impact).should('have.text',pim)
         cy.get(validate_cf_provider_fee).should('have.text',pfee)
 
+    }
+}
+//validate
+export class validateswap{
+    
+    truncateDecimals = function (number: number) {
+        return Math[number < 0 ? 'ceil' : 'floor'](number);
+    }
+    
+    valiadate_swap(tk1: string, tk2:string, gtk1:string){
+
+        cy.get(validate_swap_token1).should('have.text',tk1)
+        cy.get(validate_swap_token2).should('have.text',tk2)
+        cy.get(validate_swap_grap_token).should('have.text',gtk1)
+        cy.get('.mt-12 > :nth-child(4) > .text-sm > :nth-child(2)').then(($price) => {
+            //check price rate 1
+            expect($price.text()).to.be.equal($price.text())
+
+        }).then(($price) => {
+           
+            cy.get(':nth-child(1) > .p-4 > .bg-input-primary').then(($token1) => {
+                cy.get(':nth-child(3) > .p-4 > .bg-input-primary').then(($token2) => {
+                    var token1_val = $token1.val() as string
+                    var token2_val = $token2.val() as string
+                    
+                    //convert to decimal fomat
+                    var accualt_val = parseFloat(token1_val) / parseFloat($price.text())
+                    var expect_val = parseFloat(token2_val).toFixed(5)
+
+                    //Cut 5 decimal place with no increase
+                    var $truncate_expext_val = accualt_val.toFixed(5)
+                    
+                    expect($truncate_expext_val).to.be.equal(expect_val)
+                })
+            })
+        })
+       
+        cy.get('div[id="minimum received"] > .font-semibold > :nth-child(1)').then(($received) => {
+                
+            expect($received.text()).to.be.equal($received.text())
+
+            })
+        cy.get('div[id="price impact"] > .font-semibold > span').then(($price) => {
+                expect($price.text()).to.be.equal($price.text())  
+            }) 
+        
+        cy.get(':nth-child(1) > .p-4 > .bg-input-primary').then(($token1) => {
+            cy.get('div[id="liquidity provider fee"] > .font-semibold > :nth-child(1)').then(($fee) => {
+                var token1_val = $token1.val() as string
+                var fee_val = $fee.text() as string
+
+                //convert to decimal fomat
+                var accualt_val = parseFloat(token1_val) * 0.0025
+                var expect_val = parseFloat(fee_val).toFixed(5)
+                
+                //Cut 5 decimal place with no increase
+                var $truncate_expext_val = accualt_val.toFixed(5)
+                
+                expect($truncate_expext_val).to.be.equal(expect_val) 
+            })
+        })    
+    }
+    validate_cf_swap(tk1: string, tk2:string, gtk1:string,gtk2:string){
+
+        cy.get(validate_cf_swap_token1).should('have.text',tk1)
+        cy.get(validate_cf_swap_token2).should('have.text',tk2)
+        cy.get(validate_cf_swap_img_token1).should('have.attr','alt').and('include',gtk1)
+        cy.get(validate_cf_swap_img_token2).should('have.attr','alt').and('include',gtk2)
+        cy.get('.text-base > .space-x-1 > :nth-child(1)').then(($pricecf) => {
+            //check price rate 1
+            expect($pricecf.text()).to.be.equal($pricecf.text())
+            
+        }).then(($pricecf) => {
+            
+            cy.get(':nth-child(3) > .font-bold').then(($tokencf1) => {
+                cy.get(':nth-child(5) > .font-bold').then(($tokencf2) => {
+                    var tokencf1_val = $tokencf1.val() as string
+                    var tokencf2_val = $tokencf2.val() as string
+                    
+                    //convert to decimal fomat
+                    var accualt_val = parseFloat(tokencf1_val) / parseFloat($pricecf.text())
+                    var expect_val = parseFloat(tokencf2_val).toFixed(5)
+
+                    //Cut 5 decimal place with no increase
+                    var $truncate_expext_val = accualt_val.toFixed(5)
+                    
+                    expect($truncate_expext_val).to.be.equal(expect_val)
+                })
+            })
+        })
+        
+        cy.get('.space-y-2 > div[id="minimum received"] > .font-semibold > :nth-child(1)').then(($received) => {
+                expect($received.text()).to.be.equal($received.text())
+            })
+            
+        cy.get('.font-semibold > .text-primary-cyan > span').then(($price) => {
+                expect($price.text()).to.be.equal($price.text())  
+            }) 
+            
+        cy.get(':nth-child(3) > .font-bold').then(($tokencf1) => {
+            cy.get('.space-y-2 > div[id="liquidity provider fee"] > .font-semibold > :nth-child(1)').then(($feecf) => {
+                var token1_cf_val = $tokencf1.text() as string
+                var fee_cf_val = $feecf.text() as string
+                console.log(token1_cf_val)
+                console.log(fee_cf_val)
+                //convert to decimal fomat
+                var accualtcf_val = parseFloat(token1_cf_val) * 0.0025
+                var expectcf_val = parseFloat(fee_cf_val).toFixed(5)
+                console.log(accualtcf_val)
+                console.log(expectcf_val)
+                //Cut 5 decimal place with no increase
+                var $truncate_expext_val = accualtcf_val.toFixed(5)
+                
+                expect($truncate_expext_val).to.be.equal(expectcf_val) 
+            })
+        })
     }
 }

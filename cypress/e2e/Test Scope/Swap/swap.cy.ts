@@ -1,8 +1,8 @@
 ///<reference types="cypress" />
 ///<reference types = 'cypress-xpath'/>
-import {Swap_page} from "../../Page Model/Swap Page/swap_page"
+import {Swap_page,validateswap} from "../../Page Model/Swap Page/swap_page"
 const swap = new Swap_page()
-
+const validate_swap = new validateswap()
 describe('Login Page', () => {
 
     beforeEach(()=>{
@@ -36,7 +36,7 @@ describe('Login Page', () => {
             });
         })
     })
-    context('Swap KUSDC & Token',() => {
+    context.skip('Swap KUSDC & Token',() => {
           
         //Swap KUSDC & KUB slippage 0.1%
         it('Swap KUSDC & KUB slippage 0.1%',()=>{
@@ -44,21 +44,22 @@ describe('Login Page', () => {
             swap.clickslip1()//choose 0.1% 
             swap.clickslipclose()//click close button
             swap.clickkusdt()//click currency 1
-            swap.clickcr_kusdc()//choose KUSDC
+            swap.select_currency_token('KUSDC')//choose KUSDC
             swap.clickkusdt()//click currency 2
-            swap.clickcr_kub()//choose KUB
-            swap.entercurrency1('100')//input currency1 100
+            swap.select_currency_token('KUB')//choose KUB
+            cy.wait(2000)
+            swap.entercurrency1('1')//input currency1 100
             
             //Assert1
-            swap.validate_swappage1('KUSDC','KUB','KUSDC','KUB','100','1','99.9','< 0.01%','0.25')
+            validate_swap.valiadate_swap('KUSDC','KUB','KUSDC/KUB')
             //Asssert2
             swap.clickswap()//swap button
-            swap.validate_cf_swap('KUSDC','KUB','KUSDC','KUB','100','1','99.9','< 0.01%','0.25')    
+            validate_swap.validate_cf_swap('KUSDC','KUB','KUSDC','KUB')    
             //Assert3
             swap.click_cfconfirm()//cf confirm button
-            swap.click_cfclose()//cf close button
+            swap.click_cfclose()//cf close button 
             
-            //cy.switchToMetamaskNotification()
+            // cy.switchToMetamaskNotification()
             //cy.rejectMetamaskPermissionToSpend()
         })
     
@@ -71,13 +72,13 @@ describe('Login Page', () => {
             
 
             //Assert1
-            swap.validate_swappage1('KUSDC','KUB','KUSDC','KUB','100','1','99.5','< 0.01%','0.25') 
+            validate_swap.valiadate_swap('KUSDC','KUB','KUSDC/KUB')
             //Asssert2
             swap.clickswap()//swap button
-            swap.validate_cf_swap('KUSDC','KUB','KUSDC','KUB','100','1','99.5','< 0.01%','0.25')
+            validate_swap.validate_cf_swap('KUSDC','KUB','KUSDC','KUB') 
             //Assert3
             swap.click_cfconfirm()//cf confirm button
-            swap.click_cfclose()//cf close button
+            swap.click_cfclose()//cf close button 
         })
     
         //Swap KUSDC & KUB slippage 1.0%
@@ -88,13 +89,13 @@ describe('Login Page', () => {
             swap.entercurrency1('100')//input currency1 100
             
             //Assert1
-            swap.validate_swappage1('KUSDC','KUB','KUSDC','KUB','100','1','99','< 0.01%','0.25') 
+            validate_swap.valiadate_swap('KUSDC','KUB','KUSDC/KUB')
             //Asssert2
             swap.clickswap()//swap button
-            swap.validate_cf_swap('KUSDC','KUB','KUSDC','KUB','100','1','99','< 0.01%','0.25')
+            validate_swap.validate_cf_swap('KUSDC','KUB','KUSDC','KUB') 
             //Assert3
             swap.click_cfconfirm()//cf confirm button
-            swap.click_cfclose()//cf close button
+            swap.click_cfclose()//cf close button 
         })
     
         //Swap KUSDC & KUB slippage 100 %
@@ -105,10 +106,10 @@ describe('Login Page', () => {
             swap.entercurrency1('100')//input currency1 100
             
             //Assert1
-            swap.validate_swappage1('KUSDC','KUB','KUSDC','KUB','100','1','0','< 0.01%','0.25') 
+            validate_swap.valiadate_swap('KUSDC','KUB','KUSDC/KUB') 
             //Asssert2
             swap.clickswap()//swap button
-            swap.validate_cf_swap('KUSDC','KUB','KUSDC','KUB','100','1','0','< 0.01%','0.25')
+            validate_swap.validate_cf_swap('KUSDC','KUB','KUSDC','KUB') 
             //Assert3
             swap.click_cfconfirm()//cf confirm button
             swap.click_cfclose()//cf close button 
@@ -117,15 +118,15 @@ describe('Login Page', () => {
         //Swap KUSDC & KUB slippage 120 %
         it('Swap KUSDC & KUB slippage 120 %',()=>{
             swap.clickswapsetting()//click setting button
-            swap.enterslip4_textbox('120')//input slippage 100%
+            swap.enterslip4_textbox('120')//input slippage 120%
             swap.clickslipclose()//click close button
             swap.entercurrency1('100')//input currency1 100
             
             //Assert1
-            swap.validate_swappage1('KUSDC','KUB','KUSDC','KUB','100','1','-20','< 0.01%','0.25') 
+            validate_swap.valiadate_swap('KUSDC','KUB','KUSDC/KUB') 
             //Asssert2
             swap.clickswap()//swap button
-            swap.validate_cf_swap('KUSDC','KUB','KUSDC','KUB','100','1','-20','< 0.01%','0.25')
+            validate_swap.validate_cf_swap('KUSDC','KUB','KUSDC','KUB') 
             //Assert3
             swap.click_cfconfirm()//cf confirm button
             swap.click_cfclose()//cf close button   
@@ -139,10 +140,10 @@ describe('Login Page', () => {
             swap.entercurrency1('100')//input currency1 100
             
             //Assert1
-            swap.validate_swappage1('KUSDC','KUB','KUSDC','KUB','100','1','120','< 0.01%','0.25') 
+            validate_swap.valiadate_swap('KUSDC','KUB','KUSDC/KUB') 
             //Asssert2
             swap.clickswap()//swap button
-            swap.validate_cf_swap('KUSDC','KUB','KUSDC','KUB','100','1','120','< 0.01%','0.25')
+            validate_swap.validate_cf_swap('KUSDC','KUB','KUSDC','KUB') 
             //Assert3
             swap.click_cfconfirm()//cf confirm button
             swap.click_cfclose()//cf close button   
@@ -156,10 +157,10 @@ describe('Login Page', () => {
             swap.entercurrency1('100')//input currency1 100
             
             //Assert1
-            swap.validate_swappage1('KUSDC','KUB','KUSDC','KUB','100','1','NaN','< 0.01%','0.25') 
+            validate_swap.valiadate_swap('KUSDC','KUB','KUSDC/KUB') 
             //Asssert2
             swap.clickswap()//swap button
-            swap.validate_cf_swap('KUSDC','KUB','KUSDC','KUB','100','1','NaN','< 0.01%','0.25')
+            validate_swap.validate_cf_swap('KUSDC','KUB','KUSDC','KUB') 
             //Assert3
             //swap.click_cfconfirm()//cf confirm button
             swap.click_cfclose()//cf close button   
@@ -170,14 +171,14 @@ describe('Login Page', () => {
             swap.clickslip1()//choose 0.1% 
             swap.clickslipclose()//click close button
             swap.clickkub()//click currency 2
-            swap.clickcr_kusdt()//choose KUSDT
+            swap.select_currency_token('KUSDT')//choose KUSDT
             swap.entercurrency1('100')//input currency1 100
             
             //Assert1
-            swap.validate_swappage1('KUSDC','KUSDT','KUSDC','KUSDT','100.0659','0.999341','99.965834','< 0.01%','0.25')
+            validate_swap.valiadate_swap('KUSDC','KUSDT','KUSDC/KUSDT')
             //Asssert2
             swap.clickswap()//swap button
-            swap.validate_cf_swap('KUSDC','KUSDT','KUSDC','KUSDT','100.0659','0.999341','99.965834','< 0.01%','0.25')    
+            validate_swap.validate_cf_swap('KUSDC','KUSDT','KUSDC','KUSDT')     
             //Assert3
             swap.click_cfconfirm()//cf confirm button
             swap.click_cfclose()//cf close button
@@ -193,12 +194,11 @@ describe('Login Page', () => {
             swap.clickslipclose()//click close button
             swap.entercurrency1('100')//input currency1 100
             
-
             //Assert1
-            swap.validate_swappage1('KUSDC','KUSDT','KUSDC','KUSDT','100.0659','0.999341','99.56557','< 0.01%','0.25') 
+            validate_swap.valiadate_swap('KUSDC','KUSDT','KUSDC/KUSDT')
             //Asssert2
             swap.clickswap()//swap button
-            swap.validate_cf_swap('KUSDC','KUSDT','KUSDC','KUSDT','100.0659','0.999341','99.56557','< 0.01%','0.25')
+            validate_swap.validate_cf_swap('KUSDC','KUSDT','KUSDC','KUSDT') 
             //Assert3
             swap.click_cfconfirm()//cf confirm button
             swap.click_cfclose()//cf close button 
@@ -212,10 +212,10 @@ describe('Login Page', () => {
             swap.entercurrency1('100')//input currency1 100
             
             //Assert1
-            swap.validate_swappage1('KUSDC','KUSDT','KUSDC','KUSDT','100.0659','0.999341','99.065241','< 0.01%','0.25') 
+            validate_swap.valiadate_swap('KUSDC','KUSDT','KUSDC/KUSDT')
             //Asssert2
             swap.clickswap()//swap button
-            swap.validate_cf_swap('KUSDC','KUSDT','KUSDC','KUSDT','100.0659','0.999341','99.065241','< 0.01%','0.25')
+            validate_swap.validate_cf_swap('KUSDC','KUSDT','KUSDC','KUSDT') 
             //Assert3
             swap.click_cfconfirm()//cf confirm button
             swap.click_cfclose()//cf close button  
@@ -229,10 +229,10 @@ describe('Login Page', () => {
             swap.entercurrency1('100')//input currency1 100
             
             //Assert1
-            swap.validate_swappage1('KUSDC','KUSDT','KUSDC','KUSDT','100.0659','0.999341','0','< 0.01%','0.25') 
+            validate_swap.valiadate_swap('KUSDC','KUSDT','KUSDC/KUSDT')
             //Asssert2
             swap.clickswap()//swap button
-            swap.validate_cf_swap('KUSDC','KUSDT','KUSDC','KUSDT','100.0659','0.999341','0','< 0.01%','0.25')
+            validate_swap.validate_cf_swap('KUSDC','KUSDT','KUSDC','KUSDT') 
             //Assert3
             swap.click_cfconfirm()//cf confirm button
             swap.click_cfclose()//cf close button  
@@ -246,10 +246,10 @@ describe('Login Page', () => {
             swap.entercurrency1('100')//input currency1 100
             
             //Assert1
-            swap.validate_swappage1('KUSDC','KUSDT','KUSDC','KUSDT','100.0659','0.999341','-20.01318','< 0.01%','0.25') 
+            validate_swap.valiadate_swap('KUSDC','KUSDT','KUSDC/KUSDT') 
             //Asssert2
             swap.clickswap()//swap button
-            swap.validate_cf_swap('KUSDC','KUSDT','KUSDC','KUSDT','100.0659','0.999341','-20.01318','< 0.01%','0.25')
+            validate_swap.validate_cf_swap('KUSDC','KUSDT','KUSDC','KUSDT') 
             //Assert3
             swap.click_cfconfirm()//cf confirm button
             swap.click_cfclose()//cf close button   
@@ -263,10 +263,10 @@ describe('Login Page', () => {
             swap.entercurrency1('100')//input currency1 100
             
             //Assert1
-            swap.validate_swappage1('KUSDC','KUSDT','KUSDC','KUSDT','100.0659','0.999341','120.07908','< 0.01%','0.25') 
+            validate_swap.valiadate_swap('KUSDC','KUSDT','KUSDC/KUSDT') 
             //Asssert2
             swap.clickswap()//swap button
-            swap.validate_cf_swap('KUSDC','KUSDT','KUSDC','KUSDT','100.0659','0.999341','120.07908','< 0.01%','0.25')
+            validate_swap.validate_cf_swap('KUSDC','KUSDT','KUSDC','KUSDT') 
             //Assert3
             swap.click_cfconfirm()//cf confirm button
             swap.click_cfclose()//cf close button   
@@ -280,10 +280,10 @@ describe('Login Page', () => {
             swap.entercurrency1('100')//input currency1 100
             
             //Assert1
-            swap.validate_swappage1('KUSDC','KUSDT','KUSDC','KUSDT','100.0659','0.999341','NaN','< 0.01%','0.25') 
+            validate_swap.valiadate_swap('KUSDC','KUSDT','KUSDC/KUSDT') 
             //Asssert2
             swap.clickswap()//swap button
-            swap.validate_cf_swap('KUSDC','KUSDT','KUSDC','KUSDT','100.0659','0.999341','NaN','< 0.01%','0.25')
+            validate_swap.validate_cf_swap('KUSDC','KUSDT','KUSDC','KUSDT') 
             //Assert3
             //swap.click_cfconfirm()//cf confirm button
             swap.click_cfclose()//cf close button   
@@ -295,14 +295,14 @@ describe('Login Page', () => {
             swap.clickslip1()//choose 0.1% 
             swap.clickslipclose()//click close button
             swap.clickkusdt()//click currency 2
-            swap.clickcr_kusdc()//choose KUSDC
+            swap.select_currency_token('KUSDC')//choose KUSDC
             swap.entercurrency1('100')//input currency1 100
             
             //Assert1
-            swap.validate_swappage1('KUSDT','KUSDC','KUSDT','KUSDC','99.9341','1.000659','99.834165','< 0.01%','0.25')
+            validate_swap.valiadate_swap('KUSDT','KUSDC','KUSDT/KUSDC') 
             //Asssert2
             swap.clickswap()//swap button
-            swap.validate_cf_swap('KUSDT','KUSDC','KUSDT','KUSDC','99.9341','1.000659','99.834165','< 0.01%','0.25')    
+            validate_swap.validate_cf_swap('KUSDT','KUSDC','KUSDT','KUSDC')     
             //Assert3
             //swap.click_cfconfirm()//cf confirm button
             swap.click_cfclose()//cf close button
@@ -320,10 +320,10 @@ describe('Login Page', () => {
             swap.entercurrency1('100')//input currency1 100
         
             //Assert1
-            swap.validate_swappage1('KUSDT','KUSDC','KUSDT','KUSDC','99.9341','1.000659','99.834165','< 0.01%','0.25')
+            validate_swap.valiadate_swap('KUSDT','KUSDC','KUSDT/KUSDC') 
             //Asssert2
             swap.clickswap()//swap button
-            swap.validate_cf_swap('KUSDT','KUSDC','KUSDT','KUSDC','99.9341','1.000659','99.834165','< 0.01%','0.25')    
+            validate_swap.validate_cf_swap('KUSDT','KUSDC','KUSDT','KUSDC')    
             //Assert3
             swap.click_cfconfirm()//cf confirm button
             swap.click_cfclose()//cf close button
@@ -337,10 +337,10 @@ describe('Login Page', () => {
             swap.entercurrency1('100')//input currency1 100
             
             //Assert1
-            swap.validate_swappage1('KUSDT','KUSDC','KUSDT','KUSDC','99.9341','1.000659','99.434429','< 0.01%','0.25')
+            validate_swap.valiadate_swap('KUSDT','KUSDC','KUSDT/KUSDC') 
             //Asssert2
             swap.clickswap()//swap button
-            swap.validate_cf_swap('KUSDT','KUSDC','KUSDT','KUSDC','99.9341','1.000659','99.434429','< 0.01%','0.25')    
+            validate_swap.validate_cf_swap('KUSDT','KUSDC','KUSDT','KUSDC')     
             //Assert3
             swap.click_cfconfirm()//cf confirm button
             swap.click_cfclose()//cf close button  
@@ -354,10 +354,10 @@ describe('Login Page', () => {
             swap.entercurrency1('100')//input currency1 100
             
             //Assert1
-            swap.validate_swappage1('KUSDT','KUSDC','KUSDT','KUSDC','99.9341','1.000659','98.934759','< 0.01%','0.25')
+            validate_swap.valiadate_swap('KUSDT','KUSDC','KUSDT/KUSDC') 
             //Asssert2
             swap.clickswap()//swap button
-            swap.validate_cf_swap('KUSDT','KUSDC','KUSDT','KUSDC','99.9341','1.000659','98.934759','< 0.01%','0.25')    
+            validate_swap.validate_cf_swap('KUSDT','KUSDC','KUSDT','KUSDC')     
             //Assert3
             swap.click_cfconfirm()//cf confirm button
             swap.click_cfclose()//cf close button   
@@ -371,10 +371,10 @@ describe('Login Page', () => {
             swap.entercurrency1('100')//input currency1 100
             
             //Assert1
-            swap.validate_swappage1('KUSDT','KUSDC','KUSDT','KUSDC','99.9341','1.000659','0','< 0.01%','0.25')
+            validate_swap.valiadate_swap('KUSDT','KUSDC','KUSDT/KUSDC') 
             //Asssert2
             swap.clickswap()//swap button
-            swap.validate_cf_swap('KUSDT','KUSDC','KUSDT','KUSDC','99.9341','1.000659','0','< 0.01%','0.25')    
+            validate_swap.validate_cf_swap('KUSDT','KUSDC','KUSDT','KUSDC')     
             //Assert3
             swap.click_cfconfirm()//cf confirm button
             swap.click_cfclose()//cf close button   
@@ -388,10 +388,10 @@ describe('Login Page', () => {
             swap.entercurrency1('100')//input currency1 100
             
             //Assert1
-            swap.validate_swappage1('KUSDT','KUSDC','KUSDT','KUSDC','99.9341','1.000659','-19.98682','< 0.01%','0.25')
+            validate_swap.valiadate_swap('KUSDT','KUSDC','KUSDT/KUSDC') 
             //Asssert2
             swap.clickswap()//swap button
-            swap.validate_cf_swap('KUSDT','KUSDC','KUSDT','KUSDC','99.9341','1.000659','-19.98682','< 0.01%','0.25')    
+            validate_swap.validate_cf_swap('KUSDT','KUSDC','KUSDT','KUSDC')     
             //Assert3
             swap.click_cfconfirm()//cf confirm button
             swap.click_cfclose()//cf close button   
@@ -405,10 +405,10 @@ describe('Login Page', () => {
             swap.entercurrency1('100')//input currency1 100
             
             //Assert1
-            swap.validate_swappage1('KUSDT','KUSDC','KUSDT','KUSDC','99.9341','1.000659','119.92092','< 0.01%','0.25')
+            validate_swap.valiadate_swap('KUSDT','KUSDC','KUSDT/KUSDC') 
             //Asssert2
             swap.clickswap()//swap button
-            swap.validate_cf_swap('KUSDT','KUSDC','KUSDT','KUSDC','99.9341','1.000659','119.92092','< 0.01%','0.25')    
+            validate_swap.validate_cf_swap('KUSDT','KUSDC','KUSDT','KUSDC')     
             //Assert3
             swap.click_cfconfirm()//cf confirm button
             swap.click_cfclose()//cf close button   
@@ -422,10 +422,10 @@ describe('Login Page', () => {
             swap.entercurrency1('100')//input currency1 100
             
             //Assert1
-            swap.validate_swappage1('KUSDT','KUSDC','KUSDT','KUSDC','99.9341','1.000659','NaN','< 0.01%','0.25')
+            validate_swap.valiadate_swap('KUSDT','KUSDC','KUSDT/KUSDC') 
             //Asssert2
             swap.clickswap()//swap button
-            swap.validate_cf_swap('KUSDT','KUSDC','KUSDT','KUSDC','99.9341','1.000659','NaN','< 0.01%','0.25')    
+            validate_swap.validate_cf_swap('KUSDT','KUSDC','KUSDT','KUSDC')     
             //Assert3
             //swap.click_cfconfirm()//cf confirm button
             swap.click_cfclose()//cf close button   
@@ -437,14 +437,14 @@ describe('Login Page', () => {
             swap.clickslip1()//choose 0.1% 
             swap.clickslipclose()//click close button
             swap.clickkusdc()//click kusdc
-            swap.clickcr_kub()//choos kub
+            swap.select_currency_token('KUB')///choos KUB
             swap.entercurrency1('100')//input currency1 100
         
             //Assert1
-            swap.validate_swappage1('KUSDT','KUB','KUSDT','KUB','150.0039','0.666649','149.853896','< 0.01%','0.25')
+            validate_swap.valiadate_swap('KUSDT','KUB','KUSDT/KUB') 
             //Asssert2
             swap.clickswap()//swap button
-            swap.validate_cf_swap('KUSDT','KUB','KUSDT','KUB','150.0039','0.666649','149.853896','< 0.01%','0.25')    
+            validate_swap.validate_cf_swap('KUSDT','KUB','KUSDT','KUB')     
             //Assert3
             swap.click_cfconfirm()//cf confirm button
             swap.click_cfclose()//cf close button
@@ -459,10 +459,10 @@ describe('Login Page', () => {
             swap.entercurrency1('100')//input currency1 100
         
             //Assert1
-            swap.validate_swappage1('KUSDT','KUB','KUSDT','KUB','150.0039','0.666649','149.25388','< 0.01%','0.25')
+            validate_swap.valiadate_swap('KUSDT','KUB','KUSDT/KUB') 
             //Asssert2
             swap.clickswap()//swap button
-            swap.validate_cf_swap('KUSDT','KUB','KUSDT','KUB','150.0039','0.666649','149.25388','< 0.01%','0.25')    
+            validate_swap.validate_cf_swap('KUSDT','KUB','KUSDT','KUB')     
             //Assert3
             swap.click_cfconfirm()//cf confirm button
             swap.click_cfclose()//cf close button 
@@ -476,10 +476,10 @@ describe('Login Page', () => {
             swap.entercurrency1('100')//input currency1 100
         
             //Assert1
-            swap.validate_swappage1('KUSDT','KUB','KUSDT','KUB','150.0039','0.666649','148.503861','< 0.01%','0.25')
+            validate_swap.valiadate_swap('KUSDT','KUB','KUSDT/KUB') 
             //Asssert2
             swap.clickswap()//swap button
-            swap.validate_cf_swap('KUSDT','KUB','KUSDT','KUB','150.0039','0.666649','148.503861','< 0.01%','0.25')    
+            validate_swap.validate_cf_swap('KUSDT','KUB','KUSDT','KUB')     
             //Assert3
             swap.click_cfconfirm()//cf confirm button
             swap.click_cfclose()//cf close button   
@@ -493,10 +493,10 @@ describe('Login Page', () => {
             swap.entercurrency1('100')//input currency1 100
         
             //Assert1
-            swap.validate_swappage1('KUSDT','KUB','KUSDT','KUB','150.0039','0.666649','0','< 0.01%','0.25')
+            validate_swap.valiadate_swap('KUSDT','KUB','KUSDT/KUB') 
             //Asssert2
             swap.clickswap()//swap button
-            swap.validate_cf_swap('KUSDT','KUB','KUSDT','KUB','150.0039','0.666649','0','< 0.01%','0.25')    
+            validate_swap.validate_cf_swap('KUSDT','KUB','KUSDT','KUB')     
             //Assert3
             swap.click_cfconfirm()//cf confirm button
             swap.click_cfclose()//cf close button  
@@ -510,10 +510,10 @@ describe('Login Page', () => {
             swap.entercurrency1('100')//input currency1 100
         
             //Assert1
-            swap.validate_swappage1('KUSDT','KUB','KUSDT','KUB','150.0039','0.666649','-30.00078','< 0.01%','0.25')
+            validate_swap.valiadate_swap('KUSDT','KUB','KUSDT/KUB') 
             //Asssert2
             swap.clickswap()//swap button
-            swap.validate_cf_swap('KUSDT','KUB','KUSDT','KUB','150.0039','0.666649','-30.00078','< 0.01%','0.25')    
+            validate_swap.validate_cf_swap('KUSDT','KUB','KUSDT','KUB')     
             //Assert3
             swap.click_cfconfirm()//cf confirm button
             swap.click_cfclose()//cf close button   
@@ -527,10 +527,10 @@ describe('Login Page', () => {
             swap.entercurrency1('100')//input currency1 100
         
             //Assert1
-            swap.validate_swappage1('KUSDT','KUB','KUSDT','KUB','150.0039','0.666649','180.004679','< 0.01%','0.25')
+            validate_swap.valiadate_swap('KUSDT','KUB','KUSDT/KUB') 
             //Asssert2
             swap.clickswap()//swap button
-            swap.validate_cf_swap('KUSDT','KUB','KUSDT','KUB','150.0039','0.666649','180.004679','< 0.01%','0.25')    
+            validate_swap.validate_cf_swap('KUSDT','KUB','KUSDT','KUB')     
             //Assert3
             swap.click_cfconfirm()//cf confirm button
             swap.click_cfclose()//cf close button   
@@ -544,10 +544,10 @@ describe('Login Page', () => {
             swap.entercurrency1('100')//input currency1 100
         
             //Assert1
-            swap.validate_swappage1('KUSDT','KUB','KUSDT','KUB','150.0039','0.666649','NaN','< 0.01%','0.25')
+            validate_swap.valiadate_swap('KUSDT','KUB','KUSDT/KUB') 
             //Asssert2
             swap.clickswap()//swap button
-            swap.validate_cf_swap('KUSDT','KUB','KUSDT','KUB','150.0039','0.666649','NaN','< 0.01%','0.25')    
+            validate_swap.validate_cf_swap('KUSDT','KUB','KUSDT','KUB')     
             //Assert3
             //swap.click_cfconfirm()//cf confirm button
             swap.click_cfclose()//cf close button   
@@ -559,20 +559,20 @@ describe('Login Page', () => {
             swap.clickslip1()//choose 0.1% 
             swap.clickslipclose()//click close button
             swap.clickkub()//click currency2
-            swap.clickcr_kusdt()//choose kub
+            swap.select_currency_token('KUSDT')//choose KUSDT
             swap.entercurrency1('1')//input currency1 
         
             //Assert1
-            swap.validate_swappage1('KUB','KUSDT','KUB','KUSDT','0.666649','1.500039','0.665982','< 0.01%','0.0025')
+            validate_swap.valiadate_swap('KUB','KUSDT','KUB/KUSDT') 
             //Asssert2
             swap.clickswap()//swap button
-            swap.validate_cf_swap('KUB','KUSDT','KUB','KUSDT','0.666649','1.500039','0.665982','< 0.01%','0.0025')    
+            validate_swap.validate_cf_swap('KUB','KUSDT','KUB','KUSDT')     
             //Assert3
             swap.click_cfconfirm()//cf confirm button
             swap.click_cfclose()//cf close button   
         })
     })  
-    context('Swap KUB & Token',() => {
+    context.skip('Swap KUB & Token',() => {
         //Swap KUB & KUSDT slippage 0.1%
         it('Swap KUB & KUSDT slippage 0.1%',()=>{
             swap.clickswapsetting()//click setting button
@@ -581,10 +581,10 @@ describe('Login Page', () => {
             swap.entercurrency1('1')//input currency1 
         
             //Assert1
-            swap.validate_swappage1('KUB','KUSDT','KUB','KUSDT','0.666649','1.500039','0.665982','< 0.01%','0.0025')
+            validate_swap.valiadate_swap('KUB','KUSDT','KUB/KUSDT') 
             //Asssert2
             swap.clickswap()//swap button
-            swap.validate_cf_swap('KUB','KUSDT','KUB','KUSDT','0.666649','1.500039','0.665982','< 0.01%','0.0025')    
+            validate_swap.validate_cf_swap('KUB','KUSDT','KUB','KUSDT')     
             //Assert3
             swap.click_cfconfirm()//cf confirm button
             swap.click_cfclose()//cf close button 
@@ -598,10 +598,10 @@ describe('Login Page', () => {
             swap.entercurrency1('1')//input currency1 
         
             //Assert1
-            swap.validate_swappage1('KUB','KUSDT','KUB','KUSDT','0.666649','1.500039','0.663315','< 0.01%','0.0025')
+            validate_swap.valiadate_swap('KUB','KUSDT','KUB/KUSDT') 
             //Asssert2
             swap.clickswap()//swap button
-            swap.validate_cf_swap('KUB','KUSDT','KUB','KUSDT','0.666649','1.500039','0.663315','< 0.01%','0.0025')    
+            validate_swap.validate_cf_swap('KUB','KUSDT','KUB','KUSDT')    
             //Assert3
             swap.click_cfconfirm()//cf confirm button
             swap.click_cfclose()//cf close button  
@@ -615,10 +615,10 @@ describe('Login Page', () => {
             swap.entercurrency1('1')//input currency1 
         
             //Assert1
-            swap.validate_swappage1('KUB','KUSDT','KUB','KUSDT','0.666649','1.500039','0.659982','< 0.01%','0.0025')
+            validate_swap.valiadate_swap('KUB','KUSDT','KUB/KUSDT') 
             //Asssert2
             swap.clickswap()//swap button
-            swap.validate_cf_swap('KUB','KUSDT','KUB','KUSDT','0.666649','1.500039','0.659982','< 0.01%','0.0025')    
+            validate_swap.validate_cf_swap('KUB','KUSDT','KUB','KUSDT')    
             //Assert3
             swap.click_cfconfirm()//cf confirm button
             swap.click_cfclose()//cf close button   
@@ -632,10 +632,10 @@ describe('Login Page', () => {
             swap.entercurrency1('1')//input currency1 
         
             //Assert1
-            swap.validate_swappage1('KUB','KUSDT','KUB','KUSDT','0.666649','1.500039','0','< 0.01%','0.0025')
+            validate_swap.valiadate_swap('KUB','KUSDT','KUB/KUSDT') 
             //Asssert2
             swap.clickswap()//swap button
-            swap.validate_cf_swap('KUB','KUSDT','KUB','KUSDT','0.666649','1.500039','0','< 0.01%','0.0025')    
+            validate_swap.validate_cf_swap('KUB','KUSDT','KUB','KUSDT')    
             //Assert3
             swap.click_cfconfirm()//cf confirm button
             swap.click_cfclose()//cf close button  
@@ -649,10 +649,10 @@ describe('Login Page', () => {
             swap.entercurrency1('1')//input currency1 
         
             //Assert1
-            swap.validate_swappage1('KUB','KUSDT','KUB','KUSDT','0.666649','1.500039','-0.13333','< 0.01%','0.0025')
+            validate_swap.valiadate_swap('KUB','KUSDT','KUB/KUSDT') 
             //Asssert2
             swap.clickswap()//swap button
-            swap.validate_cf_swap('KUB','KUSDT','KUB','KUSDT','0.666649','1.500039','-0.13333','< 0.01%','0.0025')    
+            validate_swap.validate_cf_swap('KUB','KUSDT','KUB','KUSDT')    
             //Assert3
             swap.click_cfconfirm()//cf confirm button
             swap.click_cfclose()//cf close button   
@@ -666,10 +666,10 @@ describe('Login Page', () => {
             swap.entercurrency1('1')//input currency1 
         
             //Assert1
-            swap.validate_swappage1('KUB','KUSDT','KUB','KUSDT','0.666649','1.500039','0.799978','< 0.01%','0.0025')
+            validate_swap.valiadate_swap('KUB','KUSDT','KUB/KUSDT') 
             //Asssert2
             swap.clickswap()//swap button
-            swap.validate_cf_swap('KUB','KUSDT','KUB','KUSDT','0.666649','1.500039','0.799978','< 0.01%','0.0025')    
+            validate_swap.validate_cf_swap('KUB','KUSDT','KUB','KUSDT')    
             //Assert3
             swap.click_cfconfirm()//cf confirm button
             swap.click_cfclose()//cf close button    
@@ -683,10 +683,10 @@ describe('Login Page', () => {
             swap.entercurrency1('1')//input currency1 
         
             //Assert1
-            swap.validate_swappage1('KUB','KUSDT','KUB','KUSDT','0.666649','1.500039','NaN','< 0.01%','0.0025')
+            validate_swap.valiadate_swap('KUB','KUSDT','KUB/KUSDT') 
             //Asssert2
             swap.clickswap()//swap button
-            swap.validate_cf_swap('KUB','KUSDT','KUB','KUSDT','0.666649','1.500039','NaN','< 0.01%','0.0025')    
+            validate_swap.validate_cf_swap('KUB','KUSDT','KUB','KUSDT')    
             //Assert3
             //swap.click_cfconfirm()//cf confirm button
             swap.click_cfclose()//cf close button  
@@ -698,14 +698,14 @@ describe('Login Page', () => {
             swap.clickslip1()//choose 0.1% 
             swap.clickslipclose()//click close button
             swap.clickkusdt()//click currency2
-            swap.clickcr_kusdc()//choose kusdc
+            swap.select_currency_token('KUSDC')//choose kusdc
             swap.entercurrency1('1')//input currency1 
         
             //Assert1
-            swap.validate_swappage1('KUB','KUSDC','KUB','KUSDC','1','1','0.999','< 0.01%','0.0025')
+            validate_swap.valiadate_swap('KUB','KUSDC','KUB/KUSDC') 
             //Asssert2
             swap.clickswap()//swap button
-            swap.validate_cf_swap('KUB','KUSDC','KUB','KUSDC','1','1','0.999','< 0.01%','0.0025')    
+            validate_swap.validate_cf_swap('KUB','KUSDC','KUB','KUSDC')   
             //Assert3
             swap.click_cfconfirm()//cf confirm button
             swap.click_cfclose()//cf close button 
@@ -719,10 +719,10 @@ describe('Login Page', () => {
             swap.entercurrency1('1')//input currency1 
         
             //Assert1
-            swap.validate_swappage1('KUB','KUSDC','KUB','KUSDC','1','1','0.995','< 0.01%','0.0025')
+            validate_swap.valiadate_swap('KUB','KUSDC','KUB/KUSDC') 
             //Asssert2
             swap.clickswap()//swap button
-            swap.validate_cf_swap('KUB','KUSDC','KUB','KUSDC','1','1','0.995','< 0.01%','0.0025')    
+            validate_swap.validate_cf_swap('KUB','KUSDC','KUB','KUSDC')     
             //Assert3
             swap.click_cfconfirm()//cf confirm button
             swap.click_cfclose()//cf close button   
@@ -736,10 +736,10 @@ describe('Login Page', () => {
             swap.entercurrency1('1')//input currency1 
         
             //Assert1
-            swap.validate_swappage1('KUB','KUSDC','KUB','KUSDC','1','1','0.99','< 0.01%','0.0025')
+            validate_swap.valiadate_swap('KUB','KUSDC','KUB/KUSDC') 
             //Asssert2
             swap.clickswap()//swap button
-            swap.validate_cf_swap('KUB','KUSDC','KUB','KUSDC','1','1','0.99','< 0.01%','0.0025')    
+            validate_swap.validate_cf_swap('KUB','KUSDC','KUB','KUSDC')     
             //Assert3
             swap.click_cfconfirm()//cf confirm button
             swap.click_cfclose()//cf close button  
@@ -753,10 +753,10 @@ describe('Login Page', () => {
             swap.entercurrency1('1')//input currency1 
         
             //Assert1
-            swap.validate_swappage1('KUB','KUSDC','KUB','KUSDC','1','1','0','< 0.01%','0.0025')
+            validate_swap.valiadate_swap('KUB','KUSDC','KUB/KUSDC') 
             //Asssert2
             swap.clickswap()//swap button
-            swap.validate_cf_swap('KUB','KUSDC','KUB','KUSDC','1','1','0','< 0.01%','0.0025')    
+            validate_swap.validate_cf_swap('KUB','KUSDC','KUB','KUSDC')     
             //Assert3
             swap.click_cfconfirm()//cf confirm button
             swap.click_cfclose()//cf close button   
@@ -770,10 +770,10 @@ describe('Login Page', () => {
             swap.entercurrency1('1')//input currency1 
         
             //Assert1
-            swap.validate_swappage1('KUB','KUSDC','KUB','KUSDC','1','1','-0.2','< 0.01%','0.0025')
+            validate_swap.valiadate_swap('KUB','KUSDC','KUB/KUSDC') 
             //Asssert2
             swap.clickswap()//swap button
-            swap.validate_cf_swap('KUB','KUSDC','KUB','KUSDC','1','1','-0.2','< 0.01%','0.0025')    
+            validate_swap.validate_cf_swap('KUB','KUSDC','KUB','KUSDC')    
             //Assert3
             swap.click_cfconfirm()//cf confirm button
             swap.click_cfclose()//cf close button  
@@ -787,10 +787,10 @@ describe('Login Page', () => {
             swap.entercurrency1('1')//input currency1 
         
             //Assert1
-            swap.validate_swappage1('KUB','KUSDC','KUB','KUSDC','1','1','1.2','< 0.01%','0.0025')
+            validate_swap.valiadate_swap('KUB','KUSDC','KUB/KUSDC') 
             //Asssert2
             swap.clickswap()//swap button
-            swap.validate_cf_swap('KUB','KUSDC','KUB','KUSDC','1','1','1.2','< 0.01%','0.0025')    
+            validate_swap.validate_cf_swap('KUB','KUSDC','KUB','KUSDC')     
             //Assert3
             swap.click_cfconfirm()//cf confirm button
             swap.click_cfclose()//cf close button  
@@ -804,10 +804,10 @@ describe('Login Page', () => {
             swap.entercurrency1('1')//input currency1 
         
             //Assert1
-            swap.validate_swappage1('KUB','KUSDC','KUB','KUSDC','1','1','NaN','< 0.01%','0.0025')
+            validate_swap.valiadate_swap('KUB','KUSDC','KUB/KUSDC') 
             //Asssert2
             swap.clickswap()//swap button
-            swap.validate_cf_swap('KUB','KUSDC','KUB','KUSDC','1','1','NaN','< 0.01%','0.0025')    
+            validate_swap.validate_cf_swap('KUB','KUSDC','KUB','KUSDC')     
             //Assert3
             //swap.click_cfconfirm()//cf confirm button
             swap.click_cfclose()//cf close button  
@@ -818,14 +818,14 @@ describe('Login Page', () => {
             swap.clickslip1()//choose 0.1% 
             swap.clickslipclose()//click close button
             swap.clickkusdc()//click currency2
-            swap.clickcr_kub()//choose kub
+            swap.select_currency_token('KUB')//choose kub
             swap.entercurrency1('1')//input currency1 
         
             //Assert1
-            swap.validate_swappage1('KUSDC','KUB','KUSDC','KUB','1','1','0.999','< 0.01%','0.0025')
+            validate_swap.valiadate_swap('KUSDC','KUB','KUSDC/KUB')
             //Asssert2
             swap.clickswap()//swap button
-            swap.validate_cf_swap('KUSDC','KUB','KUSDC','KUB','1','1','0.999','< 0.01%','0.0025')    
+            validate_swap.validate_cf_swap('KUSDC','KUB','KUSDC','KUB')    
             //Assert3
             swap.click_cfconfirm()//cf confirm button
             swap.click_cfclose()//cf close button 
