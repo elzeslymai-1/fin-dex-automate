@@ -3,837 +3,371 @@
 import {Swap_page,validateswap} from "../../Page Model/Swap Page/swap_page"
 const swap = new Swap_page()
 const validate_swap = new validateswap()
+let base_url = 'https://dev.fin-dex.finstable.co.th/swap'
 describe('Login Page', () => {
 
     beforeEach(()=>{
         cy.viewport(1920, 1080)
     })
-    context('Check Login ', () => {
-        //Arrange
-        before(() => {
+    before(() => {
+        cy.viewport(1920, 1080)
+        cy.visit(base_url)
+        swap.connect_wallet()
+        //swap.click_connect_wallet()
+        cy.wait(700)
+    })
+    context('Check input slippage',() => {
+        //check input 0 deadline
+        it('Check input 0 deadline',() => {
+            swap.clickswapsetting()
+            swap.entertextbox_deadlineclear()
+            swap.entertextbox_deadline('0')
+            //assert
+            swap.validatefail_textbox_deadline('The minimum tx deadline is 20 mins')
+        })
+        //Check input number deadline
+        it('Check input number deadline',() => {
+            swap.entertextbox_deadlineclear()
+            swap.entertextbox_deadline('30')
+            //assert
+            swap.validate_textbox_deadline('30')
+        })
+        //Check input negative deadline
+        it('Check input negative deadline',() => {
+            swap.entertextbox_deadlineclear()
+            swap.entertextbox_deadline('-50')
+            //assert
+            swap.validate_textbox_deadline('NaN')
+        })
+        //Check input decimal deadline
+        it('Check input decimal deadline',() => {
+            swap.entertextbox_deadlineclear()
+            swap.entertextbox_deadline('30.50')
+            //assert
+            swap.validate_textbox_deadline('3050')
+        })
+        //Check input charector deadline
+        it('Check input charector deadline',() => {
+            swap.entertextbox_deadlineclear()
+            swap.entertextbox_deadline('xx')
+            //assert
+            swap.validate_textbox_deadline('NaN')
+        })
+        //Check input thai charector deadline
+        it('Check input thai charector deadline',() => {
+            swap.entertextbox_deadlineclear()
+            swap.entertextbox_deadline('กก')
+            //assert
+            swap.validate_textbox_deadline('NaN')
+        })
+        //Check input symbol deadline'
+        it('Check input symbol deadline',() => {
+            swap.entertextbox_deadlineclear()
+            swap.entertextbox_deadline('#@')
+            //assert
+            swap.validate_textbox_deadline('NaN')
+            //close
+            swap.clickslipclose()
+        })
+    })
+
+    context('validate swap',() => {
+        beforeEach(()=>{
             cy.viewport(1920, 1080)
             cy.visit('https://dev.fin-dex.finstable.co.th/swap')
-        })
-        //ACT
-        it('setup metamask', () => {
-            cy.setupMetamask(
-                Cypress.env('secret_word'),
-                {
-                    networkName: Cypress.env('network_name'),
-                    rpcUrl: Cypress.env('rpc_url'),
-                    chainId: Cypress.env('chain_id'),
-                    symbol: Cypress.env('symbole'),
-                    blockExplorer: Cypress.env('blockExpolorer'),
-                    isTestnet: true
-                },
-                Cypress.env('password')
-            ).then(setupFinished => {
-                expect(setupFinished).to.be.true;
 
-                cy.get('.space-x-3 > :nth-child(1) > .relative').click()
-                cy.get('.metamask-gradient > .absolute').click()
-                //cy.acceptMetamaskAccess()
-            });
+            cy.get('.space-x-3 > :nth-child(1) > .relative').click()
+            cy.get('.metamask-gradient > .absolute').click()
+        })
+        //validate swap slippage 0.1%
+        it('validate swap slippage 0.1%',()=>{
+            swap.clickswapsetting()//click setting button
+            swap.clickslip1()//choose 0.1% 
+            swap.clickslipclose()//click close button
+            cy.wait(1000)
+            swap.entercurrency1('100')//input currency1 100
+            cy.wait(1000)
+
+            //Assert1
+            validate_swap.valiadate_swap('KUSDT','KUSDC','KUSDT/KUSDC') 
+            swap.clickswap()//swap button
+            
+            //Assert2
+            validate_swap.validate_cf_swap('KUSDT','KUSDC','KUSDT','KUSDC')  
+            swap.click_cfconfirm()//cf confirm button
+            
+            //Assert3
+            cy.wait(500)
+            cy.get('#swal2-title').should('have.text','INSUFFICIENT OUTPUT AMOUNT')
+        })
+
+        //validate swap slippage 0.5%
+        it('validate swap slippage 0.5%',()=>{
+            swap.clickswapsetting()//click setting button
+            swap.clickslip2()//choose 0.5% 
+            swap.clickslipclose()//click close button
+            cy.wait(1000)
+            swap.entercurrency1('20')//input currency1 
+            cy.wait(1000)
+
+            //Assert1
+            validate_swap.valiadate_swap('KUSDT','KUSDC','KUSDT/KUSDC') 
+            swap.clickswap()//swap button
+            
+            //Assert2
+            validate_swap.validate_cf_swap('KUSDT','KUSDC','KUSDT','KUSDC')  
+            swap.click_cfconfirm()//cf confirm button
+            cy.confirmMetamaskTransaction({gasFee: 0.001019, gasLimit: 123321})
+            cy.wait(25000)
+
+            //Assert3
+            cy.get('.absolute').should('contain','Success')
+            cy.get('.flex-col > .MuiButtonBase-root').click()
+        })
+
+        //validate swap slippage 1.0%
+        it('validate swap slippage 1.0%',()=>{
+            swap.clickswapsetting()//click setting button
+            swap.clickslip3()//choose 1.0% 
+            swap.clickslipclose()//click close button
+            cy.wait(1000)
+            swap.entercurrency1('20')//input currency1 
+            
+            //Assert1
+            validate_swap.valiadate_swap('KUSDT','KUSDC','KUSDT/KUSDC') 
+            swap.clickswap()//swap button
+            
+            //Assert2
+            validate_swap.validate_cf_swap('KUSDT','KUSDC','KUSDT','KUSDC')  
+            swap.click_cfconfirm()//cf confirm button
+            cy.confirmMetamaskTransaction({gasFee: 0.001019, gasLimit: 123321})
+            cy.wait(18000)
+
+            //Assert3
+            cy.get('.absolute').should('contain','Success')
+            cy.get('.flex-col > .MuiButtonBase-root').click()
+        })
+
+        //validate swap slippage 100%
+        it('validate swap slippage 100%',()=>{
+            swap.clickswapsetting()//click setting button
+            swap.enterslip4_textbox('100')
+            swap.clickslipclose()//click close button
+            cy.wait(1000)
+            swap.entercurrency1('20')//input currency1 
+            
+            //Assert1
+            validate_swap.valiadate_swap('KUSDT','KUSDC','KUSDT/KUSDC') 
+            swap.clickswap()//swap button
+            
+            //Assert2
+            validate_swap.validate_cf_swap('KUSDT','KUSDC','KUSDT','KUSDC')  
+            swap.click_cfconfirm()//cf confirm button
+            cy.confirmMetamaskTransaction({gasFee: 0.001019, gasLimit: 123321})
+            cy.wait(18000)
+
+            //Assert3
+            cy.get('.absolute').should('contain','Success')
+            cy.get('.flex-col > .MuiButtonBase-root').click()
+
+        })
+        
+        //validate swap slippage 120%
+        it('validate swap slippage 120%',()=>{
+            swap.clickswapsetting()//click setting button
+            swap.enterslip4_textbox('120')
+            swap.clickslipclose()//click close button
+            cy.wait(1000)
+            swap.entercurrency1('20')//input currency1 
+            
+            //Assert1
+            validate_swap.valiadate_swap('KUSDT','KUSDC','KUSDT/KUSDC') 
+            swap.clickswap()//swap button
+            
+            //Assert2
+            validate_swap.validate_cf_swap('KUSDT','KUSDC','KUSDT','KUSDC')  
+            swap.click_cfconfirm()//cf confirm button
+
+            //Assert3
+            cy.wait(500)
+            cy.get('#swal2-title').should('contain','INVALID_ARGUMENT')
+        })
+
+        //validate swap slippage -20%
+        it('validate swap slippage -20%',()=>{
+            swap.clickswapsetting()//click setting button
+            swap.enterslip4_textbox('-20')
+            swap.clickslipclose()//click close button
+            cy.wait(1000)
+            swap.entercurrency1('20')//input currency1 
+            
+            //Assert1
+            validate_swap.valiadate_swap('KUSDT','KUSDC','KUSDT/KUSDC') 
+            swap.clickswap()//swap button
+            
+            //Assert2
+            validate_swap.validate_cf_swap('KUSDT','KUSDC','KUSDT','KUSDC')  
+            swap.click_cfconfirm()//cf confirm button
+
+            //Assert3
+            cy.wait(500)
+            cy.get('#swal2-title').should('have.text','INSUFFICIENT OUTPUT AMOUNT')
+        })
+
+        //validate swap reject 
+        it('validate swap reject',()=>{
+            swap.clickswapsetting()//click setting button
+            //swap.clickslip1()//choose 0.1% 
+            swap.enterslip4_textbox('90')
+            swap.clickslipclose()//click close button
+            cy.wait(1000)
+            swap.entercurrency1('100')//input currency1 100 
+            swap.clickswap()//swap button
+            swap.click_cfconfirm()//cf confirm button
+            cy.rejectMetamaskTransaction()
+        
+            //Assert
+            cy.get('#swal2-title').should('contain','user rejected transaction')
+            
         })
     })
-    context.skip('Swap KUSDC & Token',() => {
-          
-        //Swap KUSDC & KUB slippage 0.1%
-        it('Swap KUSDC & KUB slippage 0.1%',()=>{
+    context('Swap Token & Token',() => {
+        beforeEach(()=>{
+            cy.viewport(1920, 1080)
+            cy.visit('https://dev.fin-dex.finstable.co.th/swap')
+
+            cy.get('.space-x-3 > :nth-child(1) > .relative').click()
+            cy.get('.metamask-gradient > .absolute').click()
+        })
+        //validate value swap KUSDT & KUSDC
+        it.only('validate value swap KUSDT & KUSDC',()=>{
             swap.clickswapsetting()//click setting button
-            swap.clickslip1()//choose 0.1% 
+            swap.enterslip4_textbox('90')
             swap.clickslipclose()//click close button
-            swap.clickkusdt()//click currency 1
-            swap.select_currency_token('KUSDC')//choose KUSDC
-            swap.clickkusdt()//click currency 2
-            swap.select_currency_token('KUB')//choose KUB
-            cy.wait(2000)
-            swap.entercurrency1('1')//input currency1 100
+            cy.wait(1000)
+            swap.entercurrency1('100')//input currency1 100
             
             //Assert1
-            validate_swap.valiadate_swap('KUSDC','KUB','KUSDC/KUB')
-            //Asssert2
+            validate_swap.validate_balance()
+            validate_swap.valiadate_swap('KUSDT','KUSDC','KUSDT/KUSDC') 
             swap.clickswap()//swap button
-            validate_swap.validate_cf_swap('KUSDC','KUB','KUSDC','KUB')    
-            //Assert3
-            swap.click_cfconfirm()//cf confirm button
-            swap.click_cfclose()//cf close button 
             
-            // cy.switchToMetamaskNotification()
-            //cy.rejectMetamaskPermissionToSpend()
-        })
-    
-        //Swap KUSDC & KUB slippage 0.5%
-        it('Swap KUSDC & KUB slippage 0.5%',()=>{
-            swap.clickswapsetting()//click setting button
-            swap.clickslip2()//choose 0.5% 
-            swap.clickslipclose()//click close button
-            swap.entercurrency1('100')//input currency1 100
+            //Assert2
+            validate_swap.validate_cf_swap('KUSDT','KUSDC','KUSDT','KUSDC')  
+            swap.click_cfconfirm()//cf confirm button
+            cy.confirmMetamaskTransaction({gasFee: 0.001019, gasLimit: 123321})
+            cy.wait(22000)
+
+            //Assert3
+            cy.get('.absolute').should('contain','Success')
+            cy.get('.flex-col > .MuiButtonBase-root').click()
             
 
+            //Assert4
+            validate_swap.validate_balance()
+        })
+
+        //validate value swap KUSDT & KUB
+        it('validate value swap KUSDT & KUB',()=>{
+            swap.clickswapsetting()//click setting button
+            swap.enterslip4_textbox('90')
+            swap.clickslipclose()//click close button
+            swap.clickkusdc()
+            swap.select_currency_token('KUB')
+            swap.entercurrency1('40')//input currency1 100
+            
             //Assert1
-            validate_swap.valiadate_swap('KUSDC','KUB','KUSDC/KUB')
-            //Asssert2
+            validate_swap.valiadate_swap('KUSDT','KUB','KUSDT/KUB') 
             swap.clickswap()//swap button
-            validate_swap.validate_cf_swap('KUSDC','KUB','KUSDC','KUB') 
-            //Assert3
+            
+            //Assert2
+            validate_swap.validate_cf_swap('KUSDT','KUB','KUSDT','KUB')  
             swap.click_cfconfirm()//cf confirm button
-            swap.click_cfclose()//cf close button 
-        })
-    
-        //Swap KUSDC & KUB slippage 1.0%
-        it('Swap KUSDC & KUB slippage 1.0%',()=>{
-            swap.clickswapsetting()//click setting button
-            swap.clickslip3()//choose 1.0% 
-            swap.clickslipclose()//click close button
-            swap.entercurrency1('100')//input currency1 100
-            
-            //Assert1
-            validate_swap.valiadate_swap('KUSDC','KUB','KUSDC/KUB')
-            //Asssert2
-            swap.clickswap()//swap button
-            validate_swap.validate_cf_swap('KUSDC','KUB','KUSDC','KUB') 
+            cy.confirmMetamaskTransaction({gasFee: 0.001019, gasLimit: 123321})
+            cy.wait(20000)
+
             //Assert3
-            swap.click_cfconfirm()//cf confirm button
-            swap.click_cfclose()//cf close button 
+            cy.get('.absolute').should('contain','Success')
+            cy.get('.flex-col > .MuiButtonBase-root').click()
         })
-    
-        //Swap KUSDC & KUB slippage 100 %
-        it('Swap KUSDC & KUB slippage 100 %',()=>{
+
+        //validate value swap KUSDT & KUSDT
+        it('validate value swap KUSDT & KUSDT',()=>{
             swap.clickswapsetting()//click setting button
-            swap.enterslip4_textbox('100')//input slippage 100%
+            swap.enterslip4_textbox('90')
             swap.clickslipclose()//click close button
-            swap.entercurrency1('100')//input currency1 100
-            
-            //Assert1
-            validate_swap.valiadate_swap('KUSDC','KUB','KUSDC/KUB') 
-            //Asssert2
-            swap.clickswap()//swap button
-            validate_swap.validate_cf_swap('KUSDC','KUB','KUSDC','KUB') 
-            //Assert3
-            swap.click_cfconfirm()//cf confirm button
-            swap.click_cfclose()//cf close button 
-        })
-    
-        //Swap KUSDC & KUB slippage 120 %
-        it('Swap KUSDC & KUB slippage 120 %',()=>{
-            swap.clickswapsetting()//click setting button
-            swap.enterslip4_textbox('120')//input slippage 120%
-            swap.clickslipclose()//click close button
-            swap.entercurrency1('100')//input currency1 100
-            
-            //Assert1
-            validate_swap.valiadate_swap('KUSDC','KUB','KUSDC/KUB') 
-            //Asssert2
-            swap.clickswap()//swap button
-            validate_swap.validate_cf_swap('KUSDC','KUB','KUSDC','KUB') 
-            //Assert3
-            swap.click_cfconfirm()//cf confirm button
-            swap.click_cfclose()//cf close button   
-        })
-    
-        //Swap KUSDC & KUB slippage negative %
-        it('Swap KUSDC & KUB slippage negative %',()=>{
-            swap.clickswapsetting()//click setting button
-            swap.enterslip4_textbox('-20')//input slippage -20%
-            swap.clickslipclose()//click close button
-            swap.entercurrency1('100')//input currency1 100
-            
-            //Assert1
-            validate_swap.valiadate_swap('KUSDC','KUB','KUSDC/KUB') 
-            //Asssert2
-            swap.clickswap()//swap button
-            validate_swap.validate_cf_swap('KUSDC','KUB','KUSDC','KUB') 
-            //Assert3
-            swap.click_cfconfirm()//cf confirm button
-            swap.click_cfclose()//cf close button   
-        })
-    
-        //Swap KUSDC & KUB slippage symbol %
-        it('Swap KUSDC & KUB slippage symbol %',()=>{
-            swap.clickswapsetting()//click setting button
-            swap.enterslip4_textbox('xx')//input slippage xx%
-            swap.clickslipclose()//click close button
-            swap.entercurrency1('100')//input currency1 100
-            
-            //Assert1
-            validate_swap.valiadate_swap('KUSDC','KUB','KUSDC/KUB') 
-            //Asssert2
-            swap.clickswap()//swap button
-            validate_swap.validate_cf_swap('KUSDC','KUB','KUSDC','KUB') 
-            //Assert3
-            //swap.click_cfconfirm()//cf confirm button
-            swap.click_cfclose()//cf close button   
-        })
-        //Swap KUSDC & KUSDT slippage 0.1%
-        it('Swap KUSDC & KUSDT slippage 0.1%',()=>{
-            swap.clickswapsetting()//click setting button
-            swap.clickslip1()//choose 0.1% 
-            swap.clickslipclose()//click close button
-            swap.clickkub()//click currency 2
-            swap.select_currency_token('KUSDT')//choose KUSDT
-            swap.entercurrency1('100')//input currency1 100
-            
-            //Assert1
-            validate_swap.valiadate_swap('KUSDC','KUSDT','KUSDC/KUSDT')
-            //Asssert2
-            swap.clickswap()//swap button
-            validate_swap.validate_cf_swap('KUSDC','KUSDT','KUSDC','KUSDT')     
-            //Assert3
-            swap.click_cfconfirm()//cf confirm button
-            swap.click_cfclose()//cf close button
-            
-            //cy.switchToMetamaskNotification()
-            //cy.rejectMetamaskPermissionToSpend()
-        })
-    
-        //Swap KUSDC & KUSDT slippage 0.5%
-        it('Swap KUSDC & KUSDT slippage 0.5%',()=>{
-            swap.clickswapsetting()//click setting button
-            swap.clickslip2()//choose 0.5% 
-            swap.clickslipclose()//click close button
-            swap.entercurrency1('100')//input currency1 100
-            
-            //Assert1
-            validate_swap.valiadate_swap('KUSDC','KUSDT','KUSDC/KUSDT')
-            //Asssert2
-            swap.clickswap()//swap button
-            validate_swap.validate_cf_swap('KUSDC','KUSDT','KUSDC','KUSDT') 
-            //Assert3
-            swap.click_cfconfirm()//cf confirm button
-            swap.click_cfclose()//cf close button 
-        })
-    
-        //Swap KUSDC & KUSDT slippage 1.0%
-        it('Swap KUSDC & KUSDT slippage 1.0%',()=>{
-            swap.clickswapsetting()//click setting button
-            swap.clickslip3()//choose 1.0% 
-            swap.clickslipclose()//click close button
-            swap.entercurrency1('100')//input currency1 100
-            
-            //Assert1
-            validate_swap.valiadate_swap('KUSDC','KUSDT','KUSDC/KUSDT')
-            //Asssert2
-            swap.clickswap()//swap button
-            validate_swap.validate_cf_swap('KUSDC','KUSDT','KUSDC','KUSDT') 
-            //Assert3
-            swap.click_cfconfirm()//cf confirm button
-            swap.click_cfclose()//cf close button  
-        })
-    
-        //Swap KUSDC & KUSDT slippage 100 %
-        it('Swap KUSDC & KUSDT slippage 100 %',()=>{
-            swap.clickswapsetting()//click setting button
-            swap.enterslip4_textbox('100')//choose 100% 
-            swap.clickslipclose()//click close button
-            swap.entercurrency1('100')//input currency1 100
-            
-            //Assert1
-            validate_swap.valiadate_swap('KUSDC','KUSDT','KUSDC/KUSDT')
-            //Asssert2
-            swap.clickswap()//swap button
-            validate_swap.validate_cf_swap('KUSDC','KUSDT','KUSDC','KUSDT') 
-            //Assert3
-            swap.click_cfconfirm()//cf confirm button
-            swap.click_cfclose()//cf close button  
-        })
-    
-        //Swap KUSDC & KUSDT slippage 120 %
-        it('Swap KUSDC & KUSDT slippage 120 %',()=>{
-            swap.clickswapsetting()//click setting button
-            swap.enterslip4_textbox('120')//choose 120% 
-            swap.clickslipclose()//click close button
-            swap.entercurrency1('100')//input currency1 100
+            swap.clickkusdc()
+            swap.select_currency_token('KUSDT')
+            swap.entercurrency1('10')//input currency1 
             
             //Assert1
             validate_swap.valiadate_swap('KUSDC','KUSDT','KUSDC/KUSDT') 
-            //Asssert2
             swap.clickswap()//swap button
-            validate_swap.validate_cf_swap('KUSDC','KUSDT','KUSDC','KUSDT') 
-            //Assert3
-            swap.click_cfconfirm()//cf confirm button
-            swap.click_cfclose()//cf close button   
-        })
-    
-        //Swap KUSDC & KUSDT slippage negative %
-        it('Swap KUSDC & KUSDT slippage negative %',()=>{
-            swap.clickswapsetting()//click setting button
-            swap.enterslip4_textbox('-20')//choose -20% 
-            swap.clickslipclose()//click close button
-            swap.entercurrency1('100')//input currency1 100
             
-            //Assert1
-            validate_swap.valiadate_swap('KUSDC','KUSDT','KUSDC/KUSDT') 
-            //Asssert2
-            swap.clickswap()//swap button
-            validate_swap.validate_cf_swap('KUSDC','KUSDT','KUSDC','KUSDT') 
-            //Assert3
+            //Assert2
+            validate_swap.validate_cf_swap('KUSDC','KUSDT','KUSDC','KUSDT')  
             swap.click_cfconfirm()//cf confirm button
-            swap.click_cfclose()//cf close button   
-        })
-    
-        //Swap KUSDC & KUSDT slippage symbol %
-        it('Swap KUSDC & KUSDT slippage symbol %',()=>{
-            swap.clickswapsetting()//click setting button
-            swap.enterslip4_textbox('@@')//choose @@% 
-            swap.clickslipclose()//click close button
-            swap.entercurrency1('100')//input currency1 100
-            
-            //Assert1
-            validate_swap.valiadate_swap('KUSDC','KUSDT','KUSDC/KUSDT') 
-            //Asssert2
-            swap.clickswap()//swap button
-            validate_swap.validate_cf_swap('KUSDC','KUSDT','KUSDC','KUSDT') 
+            cy.confirmMetamaskTransaction({gasFee: 0.001019, gasLimit: 123321})
+            cy.wait(20000)
+
             //Assert3
-            //swap.click_cfconfirm()//cf confirm button
-            swap.click_cfclose()//cf close button   
+            cy.get('.absolute').should('contain','Success')
+            cy.get('.flex-col > .MuiButtonBase-root').click()
         })
 
-        //Swap KUSDC & KUSDC slippage 0.1
-        it('Swap KUSDC & KUSDC slippage 0.1%',()=>{
+        //validate value swap KUSDC & KUB
+        it('validate value swap KUSDC & KUB',()=>{
             swap.clickswapsetting()//click setting button
-            swap.clickslip1()//choose 0.1% 
+            swap.enterslip4_textbox('90')
             swap.clickslipclose()//click close button
-            swap.clickkusdt()//click currency 2
-            swap.select_currency_token('KUSDC')//choose KUSDC
-            swap.entercurrency1('100')//input currency1 100
+            swap.clickkusdc()
+            swap.select_currency_token('KUSDT')
+            swap.clickkusdt()
+            swap.select_currency_token('KUB')
+            swap.entercurrency1('40')//input currency1 
             
             //Assert1
-            validate_swap.valiadate_swap('KUSDT','KUSDC','KUSDT/KUSDC') 
-            //Asssert2
+            validate_swap.valiadate_swap('KUSDC','KUB','KUSDC/KUB') 
             swap.clickswap()//swap button
-            validate_swap.validate_cf_swap('KUSDT','KUSDC','KUSDT','KUSDC')     
-            //Assert3
-            //swap.click_cfconfirm()//cf confirm button
-            swap.click_cfclose()//cf close button
             
-            //cy.switchToMetamaskNotification()
-            //cy.rejectMetamaskPermissionToSpend()
-        })
-    })
-    context('Swap KUSDT & Token',() => {
-        //Swap KUSDT & KUSDC slippage 0.1%
-        it('Swap KUSDT & KUSDC slippage 0.1%',()=>{
-            swap.clickswapsetting()//click setting button
-            swap.clickslip1()//choose 0.1% 
-            swap.clickslipclose()//click close button
-            swap.entercurrency1('100')//input currency1 100
-        
-            //Assert1
-            validate_swap.valiadate_swap('KUSDT','KUSDC','KUSDT/KUSDC') 
-            //Asssert2
-            swap.clickswap()//swap button
-            validate_swap.validate_cf_swap('KUSDT','KUSDC','KUSDT','KUSDC')    
-            //Assert3
+            //Assert2
+            validate_swap.validate_cf_swap('KUSDC','KUB','KUSDC','KUB')  
             swap.click_cfconfirm()//cf confirm button
-            swap.click_cfclose()//cf close button
-            })
-        
-            //Swap KUSDT & KUSDC slippage 0.5%
-            it('Swap KUSDT & KUSDC slippage 0.5%',()=>{
-            swap.clickswapsetting()//click setting button
-            swap.clickslip2()//choose 0.5% 
-            swap.clickslipclose()//click close button
-            swap.entercurrency1('100')//input currency1 100
-            
-            //Assert1
-            validate_swap.valiadate_swap('KUSDT','KUSDC','KUSDT/KUSDC') 
-            //Asssert2
-            swap.clickswap()//swap button
-            validate_swap.validate_cf_swap('KUSDT','KUSDC','KUSDT','KUSDC')     
+            cy.confirmMetamaskTransaction({gasFee: 0.001019, gasLimit: 123321})
+            cy.wait(18000)
+
             //Assert3
-            swap.click_cfconfirm()//cf confirm button
-            swap.click_cfclose()//cf close button  
-        })
-        
-        //Swap KUSDT & KUSDC slippage 1.0%
-        it('Swap KUSDT & KUSDC slippage 1.0%',()=>{
-            swap.clickswapsetting()//click setting button
-            swap.clickslip3()//choose 1.0% 
-            swap.clickslipclose()//click close button
-            swap.entercurrency1('100')//input currency1 100
-            
-            //Assert1
-            validate_swap.valiadate_swap('KUSDT','KUSDC','KUSDT/KUSDC') 
-            //Asssert2
-            swap.clickswap()//swap button
-            validate_swap.validate_cf_swap('KUSDT','KUSDC','KUSDT','KUSDC')     
-            //Assert3
-            swap.click_cfconfirm()//cf confirm button
-            swap.click_cfclose()//cf close button   
-        })
-        
-        //Swap KUSDT & KUSDC slippage 100 %
-        it('Swap KUSDT & KUSDC slippage 100 %',()=>{
-            swap.clickswapsetting()//click setting button
-            swap.enterslip4_textbox('100')//choose 100% 
-            swap.clickslipclose()//click close button
-            swap.entercurrency1('100')//input currency1 100
-            
-            //Assert1
-            validate_swap.valiadate_swap('KUSDT','KUSDC','KUSDT/KUSDC') 
-            //Asssert2
-            swap.clickswap()//swap button
-            validate_swap.validate_cf_swap('KUSDT','KUSDC','KUSDT','KUSDC')     
-            //Assert3
-            swap.click_cfconfirm()//cf confirm button
-            swap.click_cfclose()//cf close button   
-        })
-        
-        //Swap KUSDT & KUSDC slippage 120 %
-        it('Swap KUSDT & KUSDC slippage 120 %',()=>{ 
-            swap.clickswapsetting()//click setting button
-            swap.enterslip4_textbox('120')//choose 120% 
-            swap.clickslipclose()//click close button
-            swap.entercurrency1('100')//input currency1 100
-            
-            //Assert1
-            validate_swap.valiadate_swap('KUSDT','KUSDC','KUSDT/KUSDC') 
-            //Asssert2
-            swap.clickswap()//swap button
-            validate_swap.validate_cf_swap('KUSDT','KUSDC','KUSDT','KUSDC')     
-            //Assert3
-            swap.click_cfconfirm()//cf confirm button
-            swap.click_cfclose()//cf close button   
-        })
-        
-        //Swap KUSDT & KUSDC slippage negative %
-        it('Swap KUSDT & KUSDC slippage negative %',()=>{
-            swap.clickswapsetting()//click setting button
-            swap.enterslip4_textbox('-20')//choose -20% 
-            swap.clickslipclose()//click close button
-            swap.entercurrency1('100')//input currency1 100
-            
-            //Assert1
-            validate_swap.valiadate_swap('KUSDT','KUSDC','KUSDT/KUSDC') 
-            //Asssert2
-            swap.clickswap()//swap button
-            validate_swap.validate_cf_swap('KUSDT','KUSDC','KUSDT','KUSDC')     
-            //Assert3
-            swap.click_cfconfirm()//cf confirm button
-            swap.click_cfclose()//cf close button   
-        })
-        
-        //Swap KUSDT & KUSDC slippage symbol %
-        it('Swap KUSDT & KUSDC slippage symbol %',()=>{
-            swap.clickswapsetting()//click setting button
-            swap.enterslip4_textbox('##')//choose ##% 
-            swap.clickslipclose()//click close button
-            swap.entercurrency1('100')//input currency1 100
-            
-            //Assert1
-            validate_swap.valiadate_swap('KUSDT','KUSDC','KUSDT/KUSDC') 
-            //Asssert2
-            swap.clickswap()//swap button
-            validate_swap.validate_cf_swap('KUSDT','KUSDC','KUSDT','KUSDC')     
-            //Assert3
-            //swap.click_cfconfirm()//cf confirm button
-            swap.click_cfclose()//cf close button   
-        })
-        
-        //Swap KUSDT & KUB slippage 0.1%
-        it('Swap KUSDT & KUB slippage 0.1%',()=>{
-            swap.clickswapsetting()//click setting button
-            swap.clickslip1()//choose 0.1% 
-            swap.clickslipclose()//click close button
-            swap.clickkusdc()//click kusdc
-            swap.select_currency_token('KUB')///choos KUB
-            swap.entercurrency1('100')//input currency1 100
-        
-            //Assert1
-            validate_swap.valiadate_swap('KUSDT','KUB','KUSDT/KUB') 
-            //Asssert2
-            swap.clickswap()//swap button
-            validate_swap.validate_cf_swap('KUSDT','KUB','KUSDT','KUB')     
-            //Assert3
-            swap.click_cfconfirm()//cf confirm button
-            swap.click_cfclose()//cf close button
-        })
-            
-        
-        //Swap KUSDT & KUB slippage 0.5%
-        it('Swap KUSDT & KUB slippage 0.5%',()=>{
-            swap.clickswapsetting()//click setting button
-            swap.clickslip2()//choose 0.5% 
-            swap.clickslipclose()//click close button
-            swap.entercurrency1('100')//input currency1 100
-        
-            //Assert1
-            validate_swap.valiadate_swap('KUSDT','KUB','KUSDT/KUB') 
-            //Asssert2
-            swap.clickswap()//swap button
-            validate_swap.validate_cf_swap('KUSDT','KUB','KUSDT','KUB')     
-            //Assert3
-            swap.click_cfconfirm()//cf confirm button
-            swap.click_cfclose()//cf close button 
-        })
-        
-        //Swap KUSDT & KUB slippage 1.0%
-        it('Swap KUSDT & KUB slippage 1.0%',()=>{
-            swap.clickswapsetting()//click setting button
-            swap.clickslip3()//choose 1.0% 
-            swap.clickslipclose()//click close button
-            swap.entercurrency1('100')//input currency1 100
-        
-            //Assert1
-            validate_swap.valiadate_swap('KUSDT','KUB','KUSDT/KUB') 
-            //Asssert2
-            swap.clickswap()//swap button
-            validate_swap.validate_cf_swap('KUSDT','KUB','KUSDT','KUB')     
-            //Assert3
-            swap.click_cfconfirm()//cf confirm button
-            swap.click_cfclose()//cf close button   
-        })
-        
-        //Swap KUSDT & KUB slippage 100 %
-        it('Swap KUSDT & KUB slippage 100 %',()=>{
-            swap.clickswapsetting()//click setting button
-            swap.enterslip4_textbox('100')//choose 100% 
-            swap.clickslipclose()//click close button
-            swap.entercurrency1('100')//input currency1 100
-        
-            //Assert1
-            validate_swap.valiadate_swap('KUSDT','KUB','KUSDT/KUB') 
-            //Asssert2
-            swap.clickswap()//swap button
-            validate_swap.validate_cf_swap('KUSDT','KUB','KUSDT','KUB')     
-            //Assert3
-            swap.click_cfconfirm()//cf confirm button
-            swap.click_cfclose()//cf close button  
-        })
-        
-        //Swap KUSDT & KUB slippage 120 %
-        it('Swap KUSDT & KUB slippage 120 %',()=>{
-            swap.clickswapsetting()//click setting button
-            swap.enterslip4_textbox('120')//choose 100% 
-            swap.clickslipclose()//click close button
-            swap.entercurrency1('100')//input currency1 100
-        
-            //Assert1
-            validate_swap.valiadate_swap('KUSDT','KUB','KUSDT/KUB') 
-            //Asssert2
-            swap.clickswap()//swap button
-            validate_swap.validate_cf_swap('KUSDT','KUB','KUSDT','KUB')     
-            //Assert3
-            swap.click_cfconfirm()//cf confirm button
-            swap.click_cfclose()//cf close button   
-        })
-        
-        //Swap KUSDT & KUB slippage negative %
-        it('Swap KUSDT & KUB slippage negative %',()=>{
-            swap.clickswapsetting()//click setting button
-            swap.enterslip4_textbox('-20')//choose -20% 
-            swap.clickslipclose()//click close button
-            swap.entercurrency1('100')//input currency1 100
-        
-            //Assert1
-            validate_swap.valiadate_swap('KUSDT','KUB','KUSDT/KUB') 
-            //Asssert2
-            swap.clickswap()//swap button
-            validate_swap.validate_cf_swap('KUSDT','KUB','KUSDT','KUB')     
-            //Assert3
-            swap.click_cfconfirm()//cf confirm button
-            swap.click_cfclose()//cf close button   
-        })
-        
-        //Swap KUSDT & KUB slippage symbol %
-        it('Swap KUSDT & KUB slippage symbol %',()=>{
-            swap.clickswapsetting()//click setting button
-            swap.enterslip4_textbox('%%')//choose 100% 
-            swap.clickslipclose()//click close button
-            swap.entercurrency1('100')//input currency1 100
-        
-            //Assert1
-            validate_swap.valiadate_swap('KUSDT','KUB','KUSDT/KUB') 
-            //Asssert2
-            swap.clickswap()//swap button
-            validate_swap.validate_cf_swap('KUSDT','KUB','KUSDT','KUB')     
-            //Assert3
-            //swap.click_cfconfirm()//cf confirm button
-            swap.click_cfclose()//cf close button   
+            cy.get('.absolute').should('contain','Success')
+            cy.get('.flex-col > .MuiButtonBase-root').click()
         })
 
-        //Swap KUSDT & KUSDT slippage 0.1 %
-        it('Swap KUSDT & KUSDT slippage 0.1 %',()=>{
+        //validate value swap KUB & KUSDC 
+        it('validate value swap KUB & KUSDC',()=>{
             swap.clickswapsetting()//click setting button
-            swap.clickslip1()//choose 0.1% 
+            swap.enterslip4_textbox('90')
             swap.clickslipclose()//click close button
-            swap.clickkub()//click currency2
-            swap.select_currency_token('KUSDT')//choose KUSDT
+            swap.clickkusdt()
+            swap.select_currency_token('KUB')
             swap.entercurrency1('1')//input currency1 
-        
-            //Assert1
-            validate_swap.valiadate_swap('KUB','KUSDT','KUB/KUSDT') 
-            //Asssert2
-            swap.clickswap()//swap button
-            validate_swap.validate_cf_swap('KUB','KUSDT','KUB','KUSDT')     
+            
+            // //Assert1
+            // validate_swap.valiadate_swap('KUB','KUSDC','KUB/KUSDC') 
+            // swap.clickswap()//swap button
+            
+            // //Assert2
+            // validate_swap.validate_cf_swap('KUB','KUSDC','KUB','KUSDC')  
+            // swap.click_cfconfirm()//cf confirm button
+            // cy.confirmMetamaskTransaction({gasFee: 0.001019, gasLimit: 123321})
+            // cy.wait(18000)
+
             //Assert3
-            swap.click_cfconfirm()//cf confirm button
-            swap.click_cfclose()//cf close button   
-        })
-    })  
-    context.skip('Swap KUB & Token',() => {
-        //Swap KUB & KUSDT slippage 0.1%
-        it('Swap KUB & KUSDT slippage 0.1%',()=>{
-            swap.clickswapsetting()//click setting button
-            swap.clickslip1()//choose 0.1% 
-            swap.clickslipclose()//click close button
-            swap.entercurrency1('1')//input currency1 
-        
-            //Assert1
-            validate_swap.valiadate_swap('KUB','KUSDT','KUB/KUSDT') 
-            //Asssert2
-            swap.clickswap()//swap button
-            validate_swap.validate_cf_swap('KUB','KUSDT','KUB','KUSDT')     
-            //Assert3
-            swap.click_cfconfirm()//cf confirm button
-            swap.click_cfclose()//cf close button 
-        })
-    
-        //Swap KUB & KUSDT slippage 0.5%
-        it('Swap KUB & KUSDT slippage 0.5%',()=>{
-            swap.clickswapsetting()//click setting button
-            swap.clickslip2()//choose 0.5% 
-            swap.clickslipclose()//click close button
-            swap.entercurrency1('1')//input currency1 
-        
-            //Assert1
-            validate_swap.valiadate_swap('KUB','KUSDT','KUB/KUSDT') 
-            //Asssert2
-            swap.clickswap()//swap button
-            validate_swap.validate_cf_swap('KUB','KUSDT','KUB','KUSDT')    
-            //Assert3
-            swap.click_cfconfirm()//cf confirm button
-            swap.click_cfclose()//cf close button  
-        })
-    
-        //Swap KUB & KUSDT slippage 1.0%
-        it('Swap KUB & KUSDT slippage 1.0%',()=>{
-            swap.clickswapsetting()//click setting button
-            swap.clickslip3()//choose 1.0% 
-            swap.clickslipclose()//click close button
-            swap.entercurrency1('1')//input currency1 
-        
-            //Assert1
-            validate_swap.valiadate_swap('KUB','KUSDT','KUB/KUSDT') 
-            //Asssert2
-            swap.clickswap()//swap button
-            validate_swap.validate_cf_swap('KUB','KUSDT','KUB','KUSDT')    
-            //Assert3
-            swap.click_cfconfirm()//cf confirm button
-            swap.click_cfclose()//cf close button   
-        })
-    
-        //Swap KUB & KUSDT slippage 100 %
-        it('Swap KUB & KUSDT slippage 100 %',()=>{
-            swap.clickswapsetting()//click setting button
-            swap.enterslip4_textbox('100')//choose 100% 
-            swap.clickslipclose()//click close button
-            swap.entercurrency1('1')//input currency1 
-        
-            //Assert1
-            validate_swap.valiadate_swap('KUB','KUSDT','KUB/KUSDT') 
-            //Asssert2
-            swap.clickswap()//swap button
-            validate_swap.validate_cf_swap('KUB','KUSDT','KUB','KUSDT')    
-            //Assert3
-            swap.click_cfconfirm()//cf confirm button
-            swap.click_cfclose()//cf close button  
-        })
-    
-        //Swap KUB & KUSDT slippage 120 %
-        it('Swap KUB & KUSDT slippage 120 %',()=>{
-            swap.clickswapsetting()//click setting button
-            swap.enterslip4_textbox('120')//choose 120% 
-            swap.clickslipclose()//click close button
-            swap.entercurrency1('1')//input currency1 
-        
-            //Assert1
-            validate_swap.valiadate_swap('KUB','KUSDT','KUB/KUSDT') 
-            //Asssert2
-            swap.clickswap()//swap button
-            validate_swap.validate_cf_swap('KUB','KUSDT','KUB','KUSDT')    
-            //Assert3
-            swap.click_cfconfirm()//cf confirm button
-            swap.click_cfclose()//cf close button   
-        })
-    
-        //Swap KUB & KUSDT slippage negative %
-        it('Swap KUB & KUSDT slippage negative %',()=>{
-            swap.clickswapsetting()//click setting button
-            swap.enterslip4_textbox('-20')//choose -20% 
-            swap.clickslipclose()//click close button
-            swap.entercurrency1('1')//input currency1 
-        
-            //Assert1
-            validate_swap.valiadate_swap('KUB','KUSDT','KUB/KUSDT') 
-            //Asssert2
-            swap.clickswap()//swap button
-            validate_swap.validate_cf_swap('KUB','KUSDT','KUB','KUSDT')    
-            //Assert3
-            swap.click_cfconfirm()//cf confirm button
-            swap.click_cfclose()//cf close button    
-        })
-    
-        //Swap KUB & KUSDT slippage symbol %
-        it('Swap KUB & KUSDT slippage symbol %',()=>{
-            swap.clickswapsetting()//click setting button
-            swap.enterslip4_textbox('zz')//choose zz% 
-            swap.clickslipclose()//click close button
-            swap.entercurrency1('1')//input currency1 
-        
-            //Assert1
-            validate_swap.valiadate_swap('KUB','KUSDT','KUB/KUSDT') 
-            //Asssert2
-            swap.clickswap()//swap button
-            validate_swap.validate_cf_swap('KUB','KUSDT','KUB','KUSDT')    
-            //Assert3
-            //swap.click_cfconfirm()//cf confirm button
-            swap.click_cfclose()//cf close button  
-        })
-    
-        //Swap KUB & KUSDC slippage 0.1%
-        it('Swap KUB & KUSDC slippage 0.1%',()=>{
-            swap.clickswapsetting()//click setting button
-            swap.clickslip1()//choose 0.1% 
-            swap.clickslipclose()//click close button
-            swap.clickkusdt()//click currency2
-            swap.select_currency_token('KUSDC')//choose kusdc
-            swap.entercurrency1('1')//input currency1 
-        
-            //Assert1
-            validate_swap.valiadate_swap('KUB','KUSDC','KUB/KUSDC') 
-            //Asssert2
-            swap.clickswap()//swap button
-            validate_swap.validate_cf_swap('KUB','KUSDC','KUB','KUSDC')   
-            //Assert3
-            swap.click_cfconfirm()//cf confirm button
-            swap.click_cfclose()//cf close button 
-        })
-    
-        //Swap KUB & KUSDC slippage 0.5%
-        it('Swap KUB & KUSDC slippage 0.5%',()=>{
-            swap.clickswapsetting()//click setting button
-            swap.clickslip2()//choose 0.5% 
-            swap.clickslipclose()//click close button
-            swap.entercurrency1('1')//input currency1 
-        
-            //Assert1
-            validate_swap.valiadate_swap('KUB','KUSDC','KUB/KUSDC') 
-            //Asssert2
-            swap.clickswap()//swap button
-            validate_swap.validate_cf_swap('KUB','KUSDC','KUB','KUSDC')     
-            //Assert3
-            swap.click_cfconfirm()//cf confirm button
-            swap.click_cfclose()//cf close button   
-        })
-    
-        //Swap KUB & KUSDC slippage 1.0%
-        it('Swap KUB & KUSDC slippage 1.0%',()=>{
-            swap.clickswapsetting()//click setting button
-            swap.clickslip3()//choose 1.0% 
-            swap.clickslipclose()//click close button
-            swap.entercurrency1('1')//input currency1 
-        
-            //Assert1
-            validate_swap.valiadate_swap('KUB','KUSDC','KUB/KUSDC') 
-            //Asssert2
-            swap.clickswap()//swap button
-            validate_swap.validate_cf_swap('KUB','KUSDC','KUB','KUSDC')     
-            //Assert3
-            swap.click_cfconfirm()//cf confirm button
-            swap.click_cfclose()//cf close button  
-        })
-    
-        //Swap KUB & KUSDC slippage 100 %
-        it('Swap KUB & KUSDC slippage 100 %',()=>{
-            swap.clickswapsetting()//click setting button
-            swap.enterslip4_textbox('100')//choose 100% 
-            swap.clickslipclose()//click close button
-            swap.entercurrency1('1')//input currency1 
-        
-            //Assert1
-            validate_swap.valiadate_swap('KUB','KUSDC','KUB/KUSDC') 
-            //Asssert2
-            swap.clickswap()//swap button
-            validate_swap.validate_cf_swap('KUB','KUSDC','KUB','KUSDC')     
-            //Assert3
-            swap.click_cfconfirm()//cf confirm button
-            swap.click_cfclose()//cf close button   
-        })
-    
-        //Swap KUB & KUSDC slippage 120 %
-        it('Swap KUB & KUSDC slippage 120 %',()=>{
-            swap.clickswapsetting()//click setting button
-            swap.enterslip4_textbox('120')//choose 120% 
-            swap.clickslipclose()//click close button
-            swap.entercurrency1('1')//input currency1 
-        
-            //Assert1
-            validate_swap.valiadate_swap('KUB','KUSDC','KUB/KUSDC') 
-            //Asssert2
-            swap.clickswap()//swap button
-            validate_swap.validate_cf_swap('KUB','KUSDC','KUB','KUSDC')    
-            //Assert3
-            swap.click_cfconfirm()//cf confirm button
-            swap.click_cfclose()//cf close button  
-        })
-    
-        //Swap KUB & KUSDC slippage negative %
-        it('Swap KUB & KUSDC slippage negative %',()=>{
-            swap.clickswapsetting()//click setting button
-            swap.enterslip4_textbox('-20')//choose -20% 
-            swap.clickslipclose()//click close button
-            swap.entercurrency1('1')//input currency1 
-        
-            //Assert1
-            validate_swap.valiadate_swap('KUB','KUSDC','KUB/KUSDC') 
-            //Asssert2
-            swap.clickswap()//swap button
-            validate_swap.validate_cf_swap('KUB','KUSDC','KUB','KUSDC')     
-            //Assert3
-            swap.click_cfconfirm()//cf confirm button
-            swap.click_cfclose()//cf close button  
-        })
-    
-        //Swap KUB & KUSDC slippage symbol %
-        it('Swap KUB & KUSDC slippage symbol %',()=>{
-            swap.clickswapsetting()//click setting button
-            swap.enterslip4_textbox('DD')//choose DD% 
-            swap.clickslipclose()//click close button
-            swap.entercurrency1('1')//input currency1 
-        
-            //Assert1
-            validate_swap.valiadate_swap('KUB','KUSDC','KUB/KUSDC') 
-            //Asssert2
-            swap.clickswap()//swap button
-            validate_swap.validate_cf_swap('KUB','KUSDC','KUB','KUSDC')     
-            //Assert3
-            //swap.click_cfconfirm()//cf confirm button
-            swap.click_cfclose()//cf close button  
-        })
-        //Swap KUB & KUB slippage 0.1%
-        it('Swap KUB & KUB slippage 0.1%',()=>{
-            swap.clickswapsetting()//click setting button
-            swap.clickslip1()//choose 0.1% 
-            swap.clickslipclose()//click close button
-            swap.clickkusdc()//click currency2
-            swap.select_currency_token('KUB')//choose kub
-            swap.entercurrency1('1')//input currency1 
-        
-            //Assert1
-            validate_swap.valiadate_swap('KUSDC','KUB','KUSDC/KUB')
-            //Asssert2
-            swap.clickswap()//swap button
-            validate_swap.validate_cf_swap('KUSDC','KUB','KUSDC','KUB')    
-            //Assert3
-            swap.click_cfconfirm()//cf confirm button
-            swap.click_cfclose()//cf close button 
-        })
-        
+            cy.wait(500)
+            cy.get('#approve-token-and-swap > :nth-child(2)').should('be.visible')
+        })        
     })
-    afterEach('',()=>{
-        cy.wait(500)
+    after('Disconnect metamask', () => {
+        cy.disconnectMetamaskWalletFromAllDapps()
+        cy.visit('https://dev.fin-dex.finstable.co.th/swap')
     })
 })
 

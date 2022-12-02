@@ -6,33 +6,12 @@ describe('Login Page', () => {
     beforeEach(()=>{
         cy.viewport(1920, 1080)
     })
-    context('Check Login ', () => {
-        //Arrange
-        before(() => {
-            cy.viewport(1920, 1080)
-            cy.visit('https://dev.fin-dex.finstable.co.th/swap')
-        })
-        //ACT
-        it('setup metamask', () => {
-            cy.setupMetamask(
-                Cypress.env('secret_word'),
-                {
-                    networkName: Cypress.env('network_name'),
-                    rpcUrl: Cypress.env('rpc_url'),
-                    chainId: Cypress.env('chain_id'),
-                    symbol: Cypress.env('symbole'),
-                    blockExplorer: Cypress.env('blockExpolorer'),
-                    isTestnet: true
-                },
-                Cypress.env('password')
-            ).then(setupFinished => {
-                expect(setupFinished).to.be.true;
-
-                cy.get('.space-x-3 > :nth-child(1) > .relative').click()
-                cy.get('.metamask-gradient > .absolute').click()
-                //cy.acceptMetamaskAccess()
-            });
-        })
+    before(() => {
+        cy.viewport(1920, 1080)
+        cy.visit('https://dev.fin-dex.finstable.co.th/swap')
+        element_swap.connect_wallet()
+        //element_swap.click_connect_wallet()
+        cy.wait(700)
     })
     context('Check Element Page', () => {
         //ACT check element page
@@ -94,7 +73,7 @@ describe('Login Page', () => {
 
         //ACT check text price detail
         it('check text price detail', () => {
-            element_swap.validate_text_price_detail('1.000659','KUSDT','per','KUSDC')
+            element_swap.validate_text_price_detail('KUSDT','per','KUSDC')
         })
 
         //ACT check swap button
@@ -103,60 +82,6 @@ describe('Login Page', () => {
         })
     })
     context(`Check Input`, () => {
-        context('Check input slippage',() => {
-            //check input 0 deadline
-            it('Check input 0 deadline',() => {
-                element_swap.clickswapsetting()
-                element_swap.entertextbox_deadlineclear()
-                element_swap.entertextbox_deadline('0')
-                //assert
-                element_swap.validatefail_textbox_deadline('The minimum tx deadline is 20 mins')
-            })
-            //Check input number deadline
-            it('Check input number deadline',() => {
-                element_swap.entertextbox_deadlineclear()
-                element_swap.entertextbox_deadline('30')
-                //assert
-                element_swap.validate_textbox_deadline('30')
-            })
-            //Check input negative deadline
-            it('Check input negative deadline',() => {
-                element_swap.entertextbox_deadlineclear()
-                element_swap.entertextbox_deadline('-50')
-                //assert
-                element_swap.validate_textbox_deadline('NaN')
-            })
-            //Check input decimal deadline
-            it('Check input decimal deadline',() => {
-                element_swap.entertextbox_deadlineclear()
-                element_swap.entertextbox_deadline('30.50')
-                //assert
-                element_swap.validate_textbox_deadline('3050')
-            })
-            //Check input charector deadline
-            it('Check input charector deadline',() => {
-                element_swap.entertextbox_deadlineclear()
-                element_swap.entertextbox_deadline('xx')
-                //assert
-                element_swap.validate_textbox_deadline('NaN')
-            })
-            //Check input thai charector deadline
-            it('Check input thai charector deadline',() => {
-                element_swap.entertextbox_deadlineclear()
-                element_swap.entertextbox_deadline('กก')
-                //assert
-                element_swap.validate_textbox_deadline('NaN')
-            })
-            //Check input symbol deadline'
-            it('Check input symbol deadline',() => {
-                element_swap.entertextbox_deadlineclear()
-                element_swap.entertextbox_deadline('#@')
-                //assert
-                element_swap.validate_textbox_deadline('NaN')
-                //close
-                element_swap.clickslipclose()
-            })
-        })
         context('Check search input currency1',() => {
             //search input number
             it('Search input number',() => {
@@ -456,42 +381,42 @@ describe('Login Page', () => {
             it('Check input number',() => {
                 element_swap.entertextbox_currency1('1000')
                 //Assert
-                element_swap.validate_textbox_currency2('999.341')
+                element_swap.validate_cf_swap()
             })
             //Check input decimal
             it('Check input decimal',() => {
                 element_swap.entertextbox_currency1clear()
                 element_swap.entertextbox_currency1('.456')
                 //Assert
-                element_swap.validate_textbox_currency2('0.455699')
+                element_swap.validate_cf_swap()
             })
             //Check input negative
             it('Check input negative',() => {
                 element_swap.entertextbox_currency1clear()
                 element_swap.entertextbox_currency1('-1000')
                 //Assert
-                element_swap.validate_textbox_currency2('-999.341')
+                element_swap.validate_cf_swap()
             })
             //Check input charector
             it('Check input charector',() => {
                 element_swap.entertextbox_currency1clear()
                 element_swap.entertextbox_currency1('first')
                 //Assert
-                element_swap.validate_textbox_currency2('')
+                cy.get('#approve-token-and-swap > :nth-child(2)').should('be.visible')
             })
             //Check input thai charector
             it('Check input thai charector',() => {
                 element_swap.entertextbox_currency1clear()
                 element_swap.entertextbox_currency1('คัพ')
                 //Assert
-                element_swap.validate_textbox_currency2('')
+                cy.get('#approve-token-and-swap > :nth-child(2)').should('be.visible')
             })
             //Check input symbol
             it('Check input symbol',() => {
                 element_swap.entertextbox_currency1clear()
                 element_swap.entertextbox_currency1('@@@')
                 //Assert
-                element_swap.validate_textbox_currency2('')
+                cy.get('#approve-token-and-swap > :nth-child(2)').should('be.visible')
             })
         })
         context('Check input currency2',() => {
@@ -499,132 +424,135 @@ describe('Login Page', () => {
             it('Check input number',() => {
                 element_swap.entertextbox_currency2('1000')
                 //Assert
-                element_swap.validate_textbox_currency1('1000.659')
+                element_swap.validate_cf_swap()
             })
             //Check input decimal
             it('Check input decimal',() => {
                 element_swap.entertextbox_currency2clear()
                 element_swap.entertextbox_currency2('.456')
                 //Assert
-                element_swap.validate_textbox_currency1('0.456301')
+                element_swap.validate_cf_swap()
             })
             //Check input negative
             it('Check input negative',() => {
                 element_swap.entertextbox_currency2clear()
                 element_swap.entertextbox_currency2('-1000')
                 //Assert
-                element_swap.validate_textbox_currency1('-1000.659')
+                element_swap.validate_cf_swap()
             })
             //Check input charector
             it('Check input charector',() => {
                 element_swap.entertextbox_currency2clear()
                 element_swap.entertextbox_currency2('first')
                 //Assert
-                element_swap.validate_textbox_currency1('')
+                cy.get('#approve-token-and-swap > :nth-child(2)').should('be.visible')
             })
             //Check input thai charector
             it('Check input thai charector',() => {
                 element_swap.entertextbox_currency2clear()
                 element_swap.entertextbox_currency2('คัพ')
                 //Assert
-                element_swap.validate_textbox_currency1('')
+                cy.get('#approve-token-and-swap > :nth-child(2)').should('be.visible')
             })
             //Check input symbol
             it('Check input symbol',() => {
                 element_swap.entertextbox_currency2clear()
                 element_swap.entertextbox_currency2('@@@')
                 //Assert
-                element_swap.validate_textbox_currency1('')
+                cy.get('#approve-token-and-swap > :nth-child(2)').should('be.visible')
             })
         })
         context('Check select currency1 & currency2',() => {
             //select kusdt & kusdc
             it('select kusdt & kusdc',()=>{
                 //Assert
-                element_swap.validate_text_price_detail('1.000659','KUSDT','per','KUSDC')
+                element_swap.validate_text_price_detail('KUSDT','per','KUSDC')
             })
             //select kusdt & kub
             it('select kusdt & kub',()=>{
                 element_swap.clickkusdc_button()
-                element_swap.clickcr_kub()
+                element_swap.select_currency_token('KUB')
                 //Assert
-                element_swap.validate_text_price_detail('0.666649','KUSDT','per','KUB')
+                element_swap.validate_text_price_detail('KUSDT','per','KUB')
             })
-            //select kusdt & kusdt
-            it('select kusdt & kusdt',()=>{
-                element_swap.clickkub_button()
-                element_swap.clickcr_kusdt()
-                //Assert
-                element_swap.validate_text_price_detail('1.500039','KUB','per','KUSDT')
-            })
-            //select kub & kusdt
-            it('select kub & kusdt',()=>{
-                //Assert
-                element_swap.validate_text_price_detail('1.500039','KUB','per','KUSDT')
-            })
-            //select kub & kusdc
-            it('select kub & kusdc',()=>{
-                element_swap.clickkusdt_button()
-                element_swap.clickcr_kusdc()
-                //Assert
-                element_swap.validate_text_price_detail('1','KUB','per','KUSDC')
-            })
-            //select kub & kub
-            it('select kub & kub',()=>{
-                element_swap.clickkusdc_button()
-                element_swap.clickcr_kub()
-                //Assert
-                element_swap.validate_text_price_detail('1','KUSDC','per','KUB')
-            })
-            //select kusdc & kub
-            it('select kusdc & kub',()=>{
-                //Assert
-                element_swap.validate_text_price_detail('1','KUSDC','per','KUB')
-            })
-            //select kusdc & kusdt
-            it('select kub & kub',()=>{
-                element_swap.clickkub_button()
-                element_swap.clickcr_kusdt()
-                //Assert
-                element_swap.validate_text_price_detail('0.999341','KUSDC','per','KUSDT')
-            })
-            //select kusdc & kusdc
-            it('select kusdc & kusdc',()=>{
-                element_swap.clickkusdt_button()
-                element_swap.clickcr_kusdc()
-                //Assert
-                element_swap.validate_text_price_detail('1.000659','KUSDT','per','KUSDC')
-            })
-            afterEach('',()=>{
-                cy.wait(500)
-            })
+            // //select kusdt & kusdt
+            // it('select kusdt & kusdt',()=>{
+            //     element_swap.clickkub_button()
+            //     element_swap.select_currency_token('KUSDT')
+            //     //Assert
+            //     element_swap.validate_text_price_detail('KUB','per','KUSDT')
+            // })
+            // //select kub & kusdt
+            // it('select kub & kusdt',()=>{
+            //     //Assert
+            //     element_swap.validate_text_price_detail('KUB','per','KUSDT')
+            // })
+            // //select kub & kusdc
+            // it('select kub & kusdc',()=>{
+            //     element_swap.clickkusdt_button()
+            //     element_swap.select_currency_token('KUSDC')
+            //     //Assert
+            //     element_swap.validate_text_price_detail('KUB','per','KUSDC')
+            // })
+            // //select kub & kub
+            // it('select kub & kub',()=>{
+            //     element_swap.clickkusdc_button()
+            //     element_swap.select_currency_token('KUB')
+            //     //Assert
+            //     element_swap.validate_text_price_detail('KUSDC','per','KUB')
+            // })
+            // //select kusdc & kub
+            // it('select kusdc & kub',()=>{
+            //     //Assert
+            //     element_swap.validate_text_price_detail('KUSDC','per','KUB')
+            // })
+            // //select kusdc & kusdt
+            // it('select kub & kub',()=>{
+            //     element_swap.clickkub_button()
+            //     element_swap.select_currency_token('KUSDT')
+            //     //Assert
+            //     element_swap.validate_text_price_detail('KUSDC','per','KUSDT')
+            // })
+            // //select kusdc & kusdc
+            // it('select kusdc & kusdc',()=>{
+            //     element_swap.clickkusdt_button()
+            //     element_swap.select_currency_token('KUSDC')
+            //     //Assert
+            //     element_swap.validate_text_price_detail('KUSDT','per','KUSDC')
+            // })
+            // afterEach('',()=>{
+            //     cy.wait(500)
+            // })
         })
     })      
-    context('Check Element Graph Page',() => {
+    context.skip('Check Element Graph Page',() => {
         //ACT check token graph
         it(`check graph currency`, () => {
         
             element_swap.validate_graph_logo_currency1('usdt')
-            element_swap.validate_graph_currency1('KUSDT')
+            element_swap.validate_graph_currency1('KUSDT/KUSDC')
             element_swap.validate_graph_logo_currency2('usdc')
-            element_swap.validate_graph_currency2('KUSDC')
+            element_swap.validate_graph_currency2('KUSDT/KUSDC')
         })
         //ACT check tranframe button
         it('check tranframe button',() => {   
-            element_swap.validate_tranframe1('1H')
-            element_swap.validate_tranframe2('1D')
-            element_swap.validate_tranframe3('1W')
+            element_swap.validate_tranframe1('1W')
+            element_swap.validate_tranframe2('1M')
+            element_swap.validate_tranframe3('1Y')
         }) 
         //check graph price currency
         it('check graph price currency',() => {
-            element_swap.validate_graph_price('0')
-            element_swap.validate_graph_cr1('KUSDT')
-            element_swap.validate_graph_cr2('KUSDC')
+            element_swap.validate_graph_price()
+            element_swap.validate_graph_currency2('KUSDT/KUSDC')
         })
-        //check graph button
-        it('check graph button',() => { 
-            element_swap.validate_graph_line()
-            element_swap.validate_graph_chart()   
-        })
+        // //check graph button
+        // it('check graph button',() => { 
+        //     element_swap.validate_graph_line()
+        //     element_swap.validate_graph_chart()   
+        // })
+    })
+    after('Disconnect metamask', () => {
+        cy.disconnectMetamaskWalletFromAllDapps()
+        cy.visit('https://dev.fin-dex.finstable.co.th/swap')
     })
 })

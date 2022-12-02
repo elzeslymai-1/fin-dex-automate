@@ -13,7 +13,7 @@ describe('Check Element Add Liquidity Page', () => {
     before(() => {
         cy.viewport(1920, 1080)
         cy.visit(base_url)
-        //addLiquidity.connect_wallet()
+        addLiquidity.connect_wallet()
         addLiquidity.click_connect_wallet()
         addLiquidity.click_add_liquidity_btn()
         cy.wait(700)
