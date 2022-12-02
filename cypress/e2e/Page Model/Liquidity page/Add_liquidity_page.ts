@@ -115,6 +115,9 @@ let element_select_token_dialog_close_button = '.flex-col > .items-center > .w-5
 
 //id
 let balance_id = ''
+
+//---------collect data----------//
+//collect from confirm add liquidity dialog
 let token1_name = ''
 let token2_name = ''
 let token1_amount = ''
@@ -638,7 +641,7 @@ export class AddLiquidity {
                     var $truncate_expect_token1_val = (this.truncateDecimals(accualt_token1_val * 100000) / 100000).toFixed(5)
 
                     //check amount token 1
-                    expect($truncate_expect_token1_val).to.be.equal((99.99955).toFixed(5))  //hard code must change
+                    expect($truncate_expect_token1_val).to.be.equal((expect_token1_val).toFixed(5))  //hard code must change
 
                     //expect($truncate_expect_token1_val).to.be.equal(expect_token1_val.toFixed(5))
                 })
@@ -794,7 +797,7 @@ export class AddLiquidity {
             expect(value).to.be.lessThan(hight_expect_value)
         })
 
-        //check pool token 2 amount
+        //check pool share pool
         cy.get(validate_your_liquidity_pool_sharepool_amount).then((data)=>{
             var value = parseFloat(data.text())
             
@@ -851,6 +854,31 @@ export class AddLiquidity {
         //click confirm
         this.click_confirm_on_confirm_liquidity_dialog()
          
+    }
+
+    //use for call from other test
+    add_liquidity_pool_success(token1: string, token2: string, amount: string, slippage: string) {
+        if (parseFloat(slippage) <= 1.0) {
+            //click Setting 
+            this.click_setting_btn()
+            //click slippage
+            this.click_slippage(slippage)
+            //click close setting dialog
+            this.click_close_setting_btn()
+        } else {
+            //click Setting 
+            this.click_setting_btn()
+            //enter slippage
+            this.enter_slippage_textbox(slippage)
+            //click close setting dialog
+            this.click_close_setting_btn()
+        }
+
+        //input token detail
+        this.enter_liquidity_detail(token1, token2, amount)
+        //click open dialog
+        this.click_supply_btn()
+        cy.wait(300)  
     }
 
     get_liquidity_detail() {
