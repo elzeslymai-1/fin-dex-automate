@@ -41,6 +41,11 @@ let validate_cf_rate = '.text-base > .space-x-1 > :nth-child(1)'
 let validate_cf_min_received = '.space-y-2 > [id="minimum received"] > .font-semibold > :nth-child(1)'
 let validate_cf_price_impact = '.font-semibold > .text-primary-cyan > span'
 let validate_cf_provider_fee = '.space-y-2 > [id="liquidity provider fee"] > .font-semibold > :nth-child(1)'
+let validate_text_success = '.absolute'
+//data
+let balance_currency1 = ''
+let balance_currency2 = ''
+let balance_currency3 = ''
 
 export class Swap_page {
     //setup before test
@@ -127,6 +132,11 @@ export class Swap_page {
     enterslip4_textbox(slip:string){
         cy.get(slip4_textbox).type(slip)
     }
+    validate_text_success(){
+        cy.get(validate_text_success).should('contain','Success')
+        cy.get('.flex-col > .MuiButtonBase-root').click()
+    }
+    
 
     validate_swappage1(tk1: string, tk2:string, gtk1:string, gtk2:string, cy2:string, r:string, minre:string, pim:string, pfee:string){
         cy.get(validate_swap_token1).should('have.text',tk1)
@@ -227,8 +237,8 @@ export class validateswap{
             
             cy.get(':nth-child(3) > .font-bold').then(($tokencf1) => {
                 cy.get(':nth-child(5) > .font-bold').then(($tokencf2) => {
-                    var tokencf1_val = $tokencf1.val() as string
-                    var tokencf2_val = $tokencf2.val() as string
+                    var tokencf1_val = $tokencf1.text() as string
+                    var tokencf2_val = $tokencf2.text() as string
                     
                     //convert to decimal fomat
                     var accualt_val = parseFloat(tokencf1_val) / parseFloat($pricecf.text())
@@ -257,8 +267,7 @@ export class validateswap{
                 //convert to decimal fomat
                 var accualtcf_val = parseFloat(token1_cf_val) * 0.0025
                 var expectcf_val = parseFloat(fee_cf_val).toFixed(5)
-                console.log(accualtcf_val)
-                console.log(expectcf_val)
+                
                 //Cut 5 decimal place with no increase
                 var $truncate_expext_val = accualtcf_val.toFixed(5)
                 
@@ -266,34 +275,111 @@ export class validateswap{
             })
         })
     }
-    validate_balance(){
-
-        
+    validate_balance_KUSDT(){
+        //get balance currency1 after
         cy.get('#balance-Tether > .ml-1').then(($balance) => {
             //check price rate 1
             expect($balance.text()).to.be.equal($balance.text())
             console.log($balance.text())
         }).then(($balance) => {
-            
-            cy.get(':nth-child(1) > .p-4 > .bg-input-primary').then(($tokencf1) => {
-                cy.get(':nth-child(3) > .p-4 > .bg-input-primary').then(($tokencf2) => {
-                    var balance_val = $balance.val() as string
-                    var tokencf1_val = $tokencf1.val() as string
-                    var tokencf2_val = $tokencf2.val() as string
-                    
-                    //convert to decimal fomat
-                    var accualt_val = parseFloat(balance_val) - parseFloat(tokencf1_val)
-                    var expect_val = parseFloat(tokencf2_val).toFixed(5)
+            //after = after
+            cy.get('#balance-Tether > .ml-1').then(($balance1) => {
+                var balance_val = $balance.text() as string
+                var balance_val1 = $balance1.text() as string
+                console.log(balance_val)
+                console.log(balance_val1)
 
-                    //Cut 5 decimal place with no increase
-                    var $truncate_expext_val = accualt_val.toFixed(5)
-                    
-                    expect($truncate_expext_val).to.be.equal($truncate_expext_val)
-                })
+                //convert to decimal fomat
+                var accualt_val = parseFloat(balance_val) - 100
+                console.log(accualt_val)
+                //Cut 5 decimal place with no increase
+                var $truncate_expext_val = accualt_val.toFixed(5)
+                console.log($truncate_expext_val)
+
+                expect(balance_val).to.be.equal(balance_val1)
+                //expect(balance_val).to.be.equal(balance_currency1)
             })
         })
-        
+    }
+    get_balance_from_currency_KUSDT(){
+        //get balance currency1 before
+        cy.get('#balance-Tether > .ml-1').then((balance) => {
+            var balance1_val = balance.text() as string
+            this.set_balance_currency1(balance1_val)
+            cy.wait(1000)
+        })
+    }
+    set_balance_currency1(a:string){
+        balance_currency1 = a
+        console.log(balance_currency1)
+    }
+
+    
+    validate_balance_KUSDC(){
+        //get balance currency1 after
+        cy.get('[id="balance-USD Coin"] > .ml-1').then(($balance) => {
+            //check price rate 1
+            expect($balance.text()).to.be.equal($balance.text())
+            
+        }).then(($balance) => {
+            //after = after
+            cy.get('[id="balance-USD Coin"] > .ml-1').then(($balance2) => {
+                var balance_val = $balance.text() as string
+                var balance_val2 = $balance2.text() as string
+               
+                // //convert to decimal fomat
+                // var accualt_val = parseFloat(balance_val) - parseFloat(tokencf2_val)
+                // console.log(accualt_val)
+                // //Cut 5 decimal place with no increase
+                // var $truncate_expext_val = accualt_val.toFixed(5)
+                
+                expect(balance_val).to.be.equal(balance_val2)
+                //expect(balance_val).to.be.equal(balance_currency2)
+            })
+        })
+    }
+    get_balance_from_currency_KUSDC(){
+        //get balance currency1 before
+        cy.get('[id="balance-USD Coin"] > .ml-1').then((balance) => {
+            var balance2_val = balance.text() as string
+            this.set_balance_currency2(balance2_val)
+        })
+    }
+    set_balance_currency2(b:string){
+        balance_currency2 = b
+    }
+    validate_balance_KUB(){
+        //get balance currency1 after
+        cy.get('[id="balance-Bitkub coin"] > .ml-1').then(($balance) => {
+            //check price rate 1
+            expect($balance.text()).to.be.equal($balance.text())
+            
+        }).then(($balance) => {
+            //after = after
+            cy.get('[id="balance-Bitkub coin"] > .ml-1').then(($balance2) => {
+                var balance_val = $balance.text() as string
+                var balance_val2 = $balance2.text() as string
+               
+                // //convert to decimal fomat
+                // var accualt_val = parseFloat(balance_val) - parseFloat(tokencf2_val)
+                // console.log(accualt_val)
+                // //Cut 5 decimal place with no increase
+                // var $truncate_expext_val = accualt_val.toFixed(5)
+                
+                expect(balance_val).to.be.equal(balance_val2)
+                //expect(balance_val).to.be.equal(balance_currency2)
+            })
+        })
     }
     
-    
+    get_balance_from_currency_KUB(){
+        //get balance currency1 before
+        cy.get('[id="balance-Bitkub coin"] > .ml-1').then((balance) => {
+            var balance2_val = balance.text() as string
+            this.set_balance_currency2(balance2_val)
+        })
+    }
+    set_balance_currency3_KUB(c:string){
+        balance_currency3 = c
+    }
 }

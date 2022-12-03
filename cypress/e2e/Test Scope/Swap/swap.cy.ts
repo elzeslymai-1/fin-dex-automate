@@ -75,9 +75,7 @@ describe('Login Page', () => {
         beforeEach(()=>{
             cy.viewport(1920, 1080)
             cy.visit('https://dev.fin-dex.finstable.co.th/swap')
-
-            cy.get('.space-x-3 > :nth-child(1) > .relative').click()
-            cy.get('.metamask-gradient > .absolute').click()
+            swap.click_connect_wallet()
         })
         //validate swap slippage 0.1%
         it('validate swap slippage 0.1%',()=>{
@@ -108,7 +106,7 @@ describe('Login Page', () => {
             swap.clickslipclose()//click close button
             cy.wait(1000)
             swap.entercurrency1('20')//input currency1 
-            cy.wait(1000)
+            cy.wait(2000)
 
             //Assert1
             validate_swap.valiadate_swap('KUSDT','KUSDC','KUSDT/KUSDC') 
@@ -121,8 +119,7 @@ describe('Login Page', () => {
             cy.wait(25000)
 
             //Assert3
-            cy.get('.absolute').should('contain','Success')
-            cy.get('.flex-col > .MuiButtonBase-root').click()
+            swap.validate_text_success()
         })
 
         //validate swap slippage 1.0%
@@ -144,8 +141,7 @@ describe('Login Page', () => {
             cy.wait(18000)
 
             //Assert3
-            cy.get('.absolute').should('contain','Success')
-            cy.get('.flex-col > .MuiButtonBase-root').click()
+            swap.validate_text_success()
         })
 
         //validate swap slippage 100%
@@ -164,11 +160,10 @@ describe('Login Page', () => {
             validate_swap.validate_cf_swap('KUSDT','KUSDC','KUSDT','KUSDC')  
             swap.click_cfconfirm()//cf confirm button
             cy.confirmMetamaskTransaction({gasFee: 0.001019, gasLimit: 123321})
-            cy.wait(18000)
+            cy.wait(25000)
 
             //Assert3
-            cy.get('.absolute').should('contain','Success')
-            cy.get('.flex-col > .MuiButtonBase-root').click()
+            swap.validate_text_success()
 
         })
         
@@ -235,20 +230,20 @@ describe('Login Page', () => {
         beforeEach(()=>{
             cy.viewport(1920, 1080)
             cy.visit('https://dev.fin-dex.finstable.co.th/swap')
-
-            cy.get('.space-x-3 > :nth-child(1) > .relative').click()
-            cy.get('.metamask-gradient > .absolute').click()
+            swap.click_connect_wallet()
         })
         //validate value swap KUSDT & KUSDC
-        it.only('validate value swap KUSDT & KUSDC',()=>{
+        it('validate value swap KUSDT & KUSDC',()=>{
             swap.clickswapsetting()//click setting button
             swap.enterslip4_textbox('90')
             swap.clickslipclose()//click close button
             cy.wait(1000)
             swap.entercurrency1('100')//input currency1 100
-            
+            cy.wait(1000)
+
             //Assert1
-            validate_swap.validate_balance()
+            validate_swap.get_balance_from_currency_KUSDT()
+            validate_swap.get_balance_from_currency_KUSDC()
             validate_swap.valiadate_swap('KUSDT','KUSDC','KUSDT/KUSDC') 
             swap.clickswap()//swap button
             
@@ -256,15 +251,14 @@ describe('Login Page', () => {
             validate_swap.validate_cf_swap('KUSDT','KUSDC','KUSDT','KUSDC')  
             swap.click_cfconfirm()//cf confirm button
             cy.confirmMetamaskTransaction({gasFee: 0.001019, gasLimit: 123321})
-            cy.wait(22000)
+            cy.wait(25000)
 
             //Assert3
-            cy.get('.absolute').should('contain','Success')
-            cy.get('.flex-col > .MuiButtonBase-root').click()
+            swap.validate_text_success()
             
-
             //Assert4
-            validate_swap.validate_balance()
+            validate_swap.validate_balance_KUSDT()
+            validate_swap.validate_balance_KUSDC()
         })
 
         //validate value swap KUSDT & KUB
@@ -275,8 +269,11 @@ describe('Login Page', () => {
             swap.clickkusdc()
             swap.select_currency_token('KUB')
             swap.entercurrency1('40')//input currency1 100
-            
+            cy.wait(1000)
+
             //Assert1
+            validate_swap.get_balance_from_currency_KUSDT()
+            validate_swap.get_balance_from_currency_KUB()
             validate_swap.valiadate_swap('KUSDT','KUB','KUSDT/KUB') 
             swap.clickswap()//swap button
             
@@ -284,11 +281,14 @@ describe('Login Page', () => {
             validate_swap.validate_cf_swap('KUSDT','KUB','KUSDT','KUB')  
             swap.click_cfconfirm()//cf confirm button
             cy.confirmMetamaskTransaction({gasFee: 0.001019, gasLimit: 123321})
-            cy.wait(20000)
+            cy.wait(22000)
 
             //Assert3
-            cy.get('.absolute').should('contain','Success')
-            cy.get('.flex-col > .MuiButtonBase-root').click()
+            swap.validate_text_success()
+
+            //Assert4
+            validate_swap.validate_balance_KUSDT()
+            validate_swap.validate_balance_KUB()
         })
 
         //validate value swap KUSDT & KUSDT
@@ -299,8 +299,11 @@ describe('Login Page', () => {
             swap.clickkusdc()
             swap.select_currency_token('KUSDT')
             swap.entercurrency1('10')//input currency1 
-            
+            cy.wait(1000)
+
             //Assert1
+            validate_swap.get_balance_from_currency_KUSDC()
+            validate_swap.get_balance_from_currency_KUSDT()
             validate_swap.valiadate_swap('KUSDC','KUSDT','KUSDC/KUSDT') 
             swap.clickswap()//swap button
             
@@ -308,11 +311,14 @@ describe('Login Page', () => {
             validate_swap.validate_cf_swap('KUSDC','KUSDT','KUSDC','KUSDT')  
             swap.click_cfconfirm()//cf confirm button
             cy.confirmMetamaskTransaction({gasFee: 0.001019, gasLimit: 123321})
-            cy.wait(20000)
+            cy.wait(25000)
 
             //Assert3
-            cy.get('.absolute').should('contain','Success')
-            cy.get('.flex-col > .MuiButtonBase-root').click()
+            swap.validate_text_success()
+
+            //Assert4
+            validate_swap.validate_balance_KUSDC()
+            validate_swap.validate_balance_KUSDT()
         })
 
         //validate value swap KUSDC & KUB
@@ -326,7 +332,10 @@ describe('Login Page', () => {
             swap.select_currency_token('KUB')
             swap.entercurrency1('40')//input currency1 
             
+            
             //Assert1
+            validate_swap.get_balance_from_currency_KUSDC()
+            validate_swap.get_balance_from_currency_KUB()
             validate_swap.valiadate_swap('KUSDC','KUB','KUSDC/KUB') 
             swap.clickswap()//swap button
             
@@ -334,15 +343,18 @@ describe('Login Page', () => {
             validate_swap.validate_cf_swap('KUSDC','KUB','KUSDC','KUB')  
             swap.click_cfconfirm()//cf confirm button
             cy.confirmMetamaskTransaction({gasFee: 0.001019, gasLimit: 123321})
-            cy.wait(18000)
+            cy.wait(25000)
 
             //Assert3
-            cy.get('.absolute').should('contain','Success')
-            cy.get('.flex-col > .MuiButtonBase-root').click()
+            swap.validate_text_success()
+
+            //Assert4
+            validate_swap.validate_balance_KUSDC()
+            validate_swap.validate_balance_KUB()
         })
 
         //validate value swap KUB & KUSDC 
-        it('validate value swap KUB & KUSDC',()=>{
+        it.skip('validate value swap KUB & KUSDC',()=>{
             swap.clickswapsetting()//click setting button
             swap.enterslip4_textbox('90')
             swap.clickslipclose()//click close button
@@ -350,19 +362,25 @@ describe('Login Page', () => {
             swap.select_currency_token('KUB')
             swap.entercurrency1('1')//input currency1 
             
-            // //Assert1
-            // validate_swap.valiadate_swap('KUB','KUSDC','KUB/KUSDC') 
-            // swap.clickswap()//swap button
             
-            // //Assert2
-            // validate_swap.validate_cf_swap('KUB','KUSDC','KUB','KUSDC')  
-            // swap.click_cfconfirm()//cf confirm button
-            // cy.confirmMetamaskTransaction({gasFee: 0.001019, gasLimit: 123321})
-            // cy.wait(18000)
+            // //Assert1
+            validate_swap.get_balance_from_currency_KUB()
+            validate_swap.get_balance_from_currency_KUSDC()
+            validate_swap.valiadate_swap('KUB','KUSDC','KUB/KUSDC') 
+            swap.clickswap()//swap button
+            
+            //Assert2
+            validate_swap.validate_cf_swap('KUB','KUSDC','KUB','KUSDC')  
+            swap.click_cfconfirm()//cf confirm button
+            cy.confirmMetamaskTransaction({gasFee: 0.001019, gasLimit: 123321})
+            //cy.wait(22000)
 
             //Assert3
-            cy.wait(500)
-            cy.get('#approve-token-and-swap > :nth-child(2)').should('be.visible')
+            swap.validate_text_success()
+
+            //Assert4
+            validate_swap.validate_balance_KUB()
+            validate_swap.validate_balance_KUSDC()
         })        
     })
     after('Disconnect metamask', () => {
