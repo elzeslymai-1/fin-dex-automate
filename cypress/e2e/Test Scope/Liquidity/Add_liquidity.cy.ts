@@ -1,7 +1,10 @@
 import { AddLiquidity, ValidateAddliquidity } from "../../Page Model/Liquidity page/Add_liquidity_page"
+import { Remove_Liquidity } from "../../Page Model/Liquidity page/Remove_liquidity_page"
+
 
 const addLiquidity = new AddLiquidity()
 const validateAddliquidity = new ValidateAddliquidity()
+const remove = new Remove_Liquidity()
 
 let base_url = 'https://dev.fin-dex.finstable.co.th/liquidity'
 
@@ -14,7 +17,7 @@ describe('Check Element Add Liquidity Page', () => {
         cy.viewport(1920, 1080)
         cy.visit(base_url)
         addLiquidity.connect_wallet()
-        addLiquidity.click_connect_wallet()
+        //addLiquidity.click_connect_wallet()
         addLiquidity.click_add_liquidity_btn()
         cy.wait(700)
     })
@@ -1032,7 +1035,11 @@ describe.only('Add Liquidity Flow Test', () => {
     })
 
     after(()=>{
+        cy.wait(1000)
+        remove.call_remove_liquidity_pool()
         cy.wait(200)
+        cy.disconnectMetamaskWalletFromAllDapps()
+        cy.visit(base_url)
     })
 })
 

@@ -1,4 +1,6 @@
 let account_button = '.wallet-address-gradient > .flex > .font-semibold'
+let connect_wallet_button = '.space-x-3 > :nth-child(1) > .relative'
+let metamask_button = '.metamask-gradient > .absolute'
 let account_metamask = '.mt-3 > .flex >'
 let account_history = ':nth-child(2) > .flex >span'
 let account_setting = ':nth-child(4) > .flex > span'
@@ -26,6 +28,10 @@ let launch_App_button = ':nth-child(2) > .max-w-5xl > .flex > :nth-child(3) > .M
 
 
 export class element_header {
+    click_connect_wallet() {
+        cy.get(connect_wallet_button).click()
+        cy.get(metamask_button).click()
+    }
     clickaccount_button(){
         cy.get(account_button).click()
     }
@@ -74,7 +80,7 @@ export class element_header {
         .and('include','liquidity')
     }
     validateaccount_filter_element(meta: string,history:string,setting:string,disconnect:string) {
-        cy.get(account_metamask).should('contain','0x05008d7d4bdb7...f774ff4eb4e4a06').and('have.length',(3))
+        cy.get(account_metamask).should('contain','0x').and('have.length',(3))
         .and('have.attr','src',).and('include',meta)//logo and account  
         cy.get('.w-5 > path').eq(4).should('have.length',(1))// copy button
         cy.get(account_history).should('have.text',history).and('have.length',(1)) // History button

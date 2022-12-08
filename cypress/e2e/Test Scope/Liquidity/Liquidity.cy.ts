@@ -151,7 +151,7 @@ describe('Liquidity Page', () => {
 
         //ACT
         it('Check => Find Other LP Tokens Button', () => {
-            cy.wait(500)
+            cy.wait(1500)
             //assert
             validateLiquidity.validate_Find_other_lp_button_element()
         })
@@ -351,6 +351,7 @@ describe('Liquidity Page', () => {
     })
 
     after(() => {
+        cy.wait(200)
         cy.disconnectMetamaskWalletFromAllDapps()
         cy.visit(base_url)
     })

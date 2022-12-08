@@ -14,8 +14,8 @@ describe('Remove Liquidity Flow', () => {
             cy.viewport(1920, 1080)
             cy.visit(base_url)
 
-            //remove.connect_wallet()
-            remove.click_connect_wallet()
+            remove.connect_wallet()
+            //remove.click_connect_wallet()
 
             //add liquidity -token1 -token2 -amount -slippage
             remove.add_liquidity_pool('KUSDC', 'KUSDT', '1000', '90')
@@ -197,5 +197,11 @@ describe('Remove Liquidity Flow', () => {
         after(() => {
             cy.wait(300)
         })
+    })
+
+    after(()=>{
+        cy.wait(200)
+        cy.disconnectMetamaskWalletFromAllDapps()
+        cy.visit(base_url)
     })
 })
