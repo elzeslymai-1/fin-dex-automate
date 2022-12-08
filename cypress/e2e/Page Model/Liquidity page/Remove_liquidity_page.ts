@@ -146,7 +146,7 @@ export class Remove_Liquidity {
         cy.get(slippage_textbox).clear()
     }
 
-    click_remove_percen(message : string){
+    click_remove_percen(message: string) {
         cy.get(remove_percen_button).contains(message).click()
         this.get_token_detail_from_remove_liquidity_recieve()
     }
@@ -171,15 +171,15 @@ export class Remove_Liquidity {
         this.get_token_detail_from_remove_liquidity_recieve()
     }
 
-    click_enable_btn(){
+    click_enable_btn() {
         cy.get(enable_button).eq(0).click()
     }
 
-    click_remove_btn(){
+    click_remove_btn() {
         cy.get(remove_button).eq(1).click()
     }
 
-    click_confirm_remove_btn(){
+    click_confirm_remove_btn() {
         cy.get(confirm_remove_button).click()
     }
 
@@ -255,7 +255,7 @@ export class Remove_Liquidity {
         this.validate_remove_slibar('100')
         //check percen button
         cy.get(validate_remove_100_percen_button).should('have.attr', 'class').and('contain', 'css-13o36p3')
-        
+
         //check amount token after select percen
         this.validate_token_detail('100')
     }
@@ -295,68 +295,68 @@ export class Remove_Liquidity {
 
     }
 
-    validate_slippage(){
-        cy.get(validate_slippage).should('have.text', slippage+'%')
+    validate_slippage() {
+        cy.get(validate_slippage).should('have.text', slippage + '%')
         cy.log(slippage)
     }
 
-    validate_sharepool(){
-        cy.get(validate_liquidity_pool_sharepool).then((data)=>{
+    validate_sharepool() {
+        cy.get(validate_liquidity_pool_sharepool).then((data) => {
             expect(data.text()).to.be.equal(share_pool_amount)
         })
     }
 
-    validate_liquidity_pool_name(){
-        cy.get(validate_liquidity_pool_name).then((data)=>{
-            expect(data.text()).to.be.equal(token1_name+'/'+token2_name)
+    validate_liquidity_pool_name() {
+        cy.get(validate_liquidity_pool_name).then((data) => {
+            expect(data.text()).to.be.equal(token1_name + '/' + token2_name)
         })
     }
 
-    validate_liquidity_pool_token1_amount(){
-        cy.get(validate_liquidity_pool_token1_amount).then((data)=>{
+    validate_liquidity_pool_token1_amount() {
+        cy.get(validate_liquidity_pool_token1_amount).then((data) => {
             expect(data.text()).to.be.equal(token1_amount)
         })
     }
 
-    validate_liquidity_pool_token2_amount(){
-        cy.get(validate_liquidity_pool_token2_amount).then((data)=>{
+    validate_liquidity_pool_token2_amount() {
+        cy.get(validate_liquidity_pool_token2_amount).then((data) => {
             expect(data.text()).to.be.equal(token2_amount)
         })
     }
 
-    validate_no_input_amount_remove(){
-        cy.get(validate_enable_button).then((data)=>{
+    validate_no_input_amount_remove() {
+        cy.get(validate_enable_button).then((data) => {
             expect(data.eq(0)).to.be.disabled
         })
 
-        cy.get(validate_remove_button).then((data)=>{
+        cy.get(validate_remove_button).then((data) => {
             expect(data.eq(1).text()).to.be.equal('enter_an_amount')
         })
     }
 
-    validate_notification(message : string){
+    validate_notification(message: string) {
         cy.get(validate_notification).should('contain', message)
     }
 
-    validate_confirm_remove_dialog(){
+    validate_confirm_remove_dialog() {
         //check token1 name
-        cy.get(validate_confirm_remove_dialog_token1_name).then((data)=>{
+        cy.get(validate_confirm_remove_dialog_token1_name).then((data) => {
             var token1_name_val = data.text()
             expect(token1_name_val).to.be.equal(remove_token1_name)
         })
         //check token2 name
-        cy.get(validate_confirm_remove_dialog_token2_name).then((data)=>{
+        cy.get(validate_confirm_remove_dialog_token2_name).then((data) => {
             var token2_name_val = data.text()
             expect(token2_name_val).to.be.equal(remove_token2_name)
         })
         //check token1 amount
-        cy.get(validate_confirm_remove_dialog_token1_amount).then((data)=>{
+        cy.get(validate_confirm_remove_dialog_token1_amount).then((data) => {
             var token1_amount_val = parseFloat(data.text())
 
             expect(token1_amount_val).to.be.equal(parseFloat(remove_token1_amount))
         })
         //check token2 amount
-        cy.get(validate_confirm_remove_dialog_token2_amount).then((data)=>{
+        cy.get(validate_confirm_remove_dialog_token2_amount).then((data) => {
             var token2_amount_val = parseFloat(data.text())
 
             expect(token2_amount_val).to.be.equal(parseFloat(remove_token2_amount))
@@ -375,8 +375,8 @@ export class Remove_Liquidity {
         })
     }
 
-    validate_remove_liquidity_success(percen : string) {
-        
+    validate_remove_liquidity_success(percen: string) {
+
         //check add liquidity success dialog
         this.validate_remove_liquidity_success_dialog()
         //check add liquidity success dialog message
@@ -390,39 +390,68 @@ export class Remove_Liquidity {
 
         //check your liquidity after remove
         cy.get('body').then((data) => {
-            if(percen == '100'){
+            if (percen == '100') {
                 expect(data.find(validate_your_liquidity).length).to.be.equal(0)
-            }else{
+            } else {
                 expect(data.find(validate_your_liquidity).length).to.be.equal(1)
 
                 //open your liquidity detail
                 this.click_your_liquidity_btn()
 
-                cy.get(validate_your_liquidity_pool_token1_amount).then((data1)=>{
+                cy.get(validate_your_liquidity_pool_token1_amount).then((data1) => {
                     var token1_value = parseFloat(data1.text())
-                    var expect_token1_value = parseFloat(token1_amount)-((parseFloat(token1_amount)*parseFloat(percen))/100)
+                    var expect_token1_value = parseFloat(token1_amount) - ((parseFloat(token1_amount) * parseFloat(percen)) / 100)
 
                     expect(token1_value).to.be.greaterThan(expect_token1_value)
                     console.log(expect_token1_value)
                 })
-        
+
                 //check pool token 2 amount
-                cy.get(validate_your_liquidity_pool_token2_amount).then((data2)=>{
+                cy.get(validate_your_liquidity_pool_token2_amount).then((data2) => {
                     var token2_value = parseFloat(data2.text())
-                    var expect_token2_value = parseFloat(token2_amount)-((parseFloat(token2_amount)*parseFloat(percen))/100)
-                    
+                    var expect_token2_value = parseFloat(token2_amount) - ((parseFloat(token2_amount) * parseFloat(percen)) / 100)
+
                     expect(token2_value).to.be.greaterThan(expect_token2_value)
                     console.log(expect_token2_value)
                 })
-                
+
             }
         })
-        
+
     }
 
-    remove_liquidity_pool(message : string){
+    remove_liquidity_pool(message: string) {
         //select 25%
         this.click_remove_percen(message)
+        //click enable
+        this.click_enable_btn()
+        cy.wait(3000)
+        //confirm on notification metamask and wait
+        cy.confirmMetamaskPermissionToSpend()
+        cy.wait(25000)
+        //click remove button
+        this.click_remove_btn()
+        //click confirm remove button
+        this.click_confirm_remove_btn()
+        cy.wait(3000)
+        //reject on notification metamask
+        cy.confirmMetamaskPermissionToSpend()
+        cy.wait(25000)
+    }
+
+    //export for another file to call this function
+    call_remove_liquidity_pool() {
+        cy.viewport(1920, 1080)
+        cy.visit('https://dev.fin-dex.finstable.co.th/liquidity')
+
+        //remove.connect_wallet()
+        this.click_connect_wallet()
+        cy.wait(1500)
+        //setting slippage & go to remove liquidity page
+        this.go_to_remove_liquidity_page()
+        cy.wait(2500)
+        //select 25%
+        this.click_remove_percen('100')
         //click enable
         this.click_enable_btn()
         cy.wait(3000)
