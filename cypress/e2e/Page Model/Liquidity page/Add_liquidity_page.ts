@@ -118,10 +118,14 @@ let balance_id = ''
 
 //---------collect data----------//
 //collect from confirm add liquidity dialog
+let balance_token1 = ''
+let balance_token2 = ''
 let token1_name = ''
 let token2_name = ''
 let token1_amount = ''
 let token2_amount = ''
+let token1_after_add_amount: number
+let token2_after_add_amount: number
 let share_pool_amount = ''
 let slippage = ''
 
@@ -274,7 +278,7 @@ export class AddLiquidity {
         cy.get(close_add_liquidity_success_dialog_button).click()
     }
 
-    click_your_liquidity_btn(){
+    click_your_liquidity_btn() {
         cy.get(your_liquidity_button).click()
     }
 
@@ -522,7 +526,7 @@ export class AddLiquidity {
         cy.get(validate_input_token_2_amount_textbox).should('have.value', message)
     }
 
-    validate_price_rate() {
+    validate_price_rate(slippage: string) {
 
         cy.get(validate_price_rate).then(($price) => {
             //check price rate 1
@@ -536,16 +540,22 @@ export class AddLiquidity {
                 cy.get(token_2_amount_textbox).then(($token2) => {
                     var token1_val = $token1.val() as string
                     var token2_val = $token2.val() as string
-
+                    console.log(typeof token2_val)
                     //convert to decimal fomat
+                    var slippage_val = parseFloat(slippage)
                     var accualt_val = parseFloat(token1_val) / parseFloat($price.eq(0).text())
+                    var low_accualt_val = accualt_val - ((accualt_val * slippage_val) / 100)
+                    var high_accualt_val = accualt_val + ((accualt_val * slippage_val) / 100)
                     var expect_val = parseFloat(token2_val).toFixed(5)
+
 
                     //Cut 5 decimal place with no increase
                     //var $truncate_expext_val = (this.truncateDecimals(accualt_val * 100000) / 100000).toFixed(5)
-                    var $truncate_expext_val = accualt_val.toFixed(5)
+                    var $truncate_low_expect_val = low_accualt_val.toFixed(5)
+                    var $truncate_high_expect_val = high_accualt_val.toFixed(5)
 
-                    expect($truncate_expext_val).to.be.equal(expect_val)
+                    expect(parseFloat(expect_val)).to.be.within(parseFloat($truncate_low_expect_val), parseFloat($truncate_high_expect_val))
+
                 })
             })
         })
@@ -580,9 +590,10 @@ export class AddLiquidity {
         this.click_select_token_2_dialog_btn()
         //select token 1
         this.click_token_from_dialog_token_list(token2)
-        cy.wait(2000)
+        cy.wait(2500)
         //clear token
         this.clear_token_1_amount()
+        cy.wait(1000)
         //input token  as symbol
         this.enter_token_1_amount(amount)
         cy.wait(1000)
@@ -603,7 +614,7 @@ export class AddLiquidity {
         })
     }
 
-    validate_confirm_liquidity_dialog(token1: string, token2: string) {
+    validate_confirm_liquidity_dialog(token1: string, token2: string, slippage: string) {
         //check token name1
         cy.get(validate_confirm_liquidity_dialog_token1).should('have.text', token1)
 
@@ -633,17 +644,19 @@ export class AddLiquidity {
                     var token2_val = $token2.text() as string
 
                     //convert to decimal fomat
+                    var slippage_val = parseFloat(slippage)
                     var accualt_token1_val = parseFloat(token2_val) * parseFloat($price1.text())
+                    var low_accualt_token1_val = accualt_token1_val - ((accualt_token1_val * slippage_val) / 100)
+                    var high_accualt_token1_val = accualt_token1_val + ((accualt_token1_val * slippage_val) / 100)
                     var expect_token1_val = parseFloat(token1_val)
 
                     //Cut 5 decimal place with no increase
-                    //token1 value
-                    var $truncate_expect_token1_val = (this.truncateDecimals(accualt_token1_val * 100000) / 100000).toFixed(5)
+                    //var $truncate_expect_token1_val = (this.truncateDecimals(accualt_token1_val * 100000) / 100000).toFixed(5)
+                    var $truncate_low_expect_token1_val = low_accualt_token1_val.toFixed(5)
+                    var $truncate_high_expect_token1_val = high_accualt_token1_val.toFixed(5)
 
                     //check amount token 1
-                    expect($truncate_expect_token1_val).to.be.equal((expect_token1_val).toFixed(5))  //hard code must change
-
-                    //expect($truncate_expect_token1_val).to.be.equal(expect_token1_val.toFixed(5))
+                    expect(expect_token1_val).to.be.within(parseFloat($truncate_low_expect_token1_val), parseFloat($truncate_high_expect_token1_val))
                 })
             })
         })
@@ -656,15 +669,20 @@ export class AddLiquidity {
                     var token2_val = $token2.text() as string
 
                     //convert to decimal fomat
-                    var accualt_token1_val = parseFloat(token1_val) / parseFloat($price1.text())
-                    var accualt_token2_val = parseFloat(token2_val)
+                    var slippage_val = parseFloat(slippage)
+                    var accualt_token2_val = parseFloat(token1_val) / parseFloat($price1.text())
+                    var low_accualt_token2_val = accualt_token2_val - ((accualt_token2_val * slippage_val) / 100)
+                    var high_accualt_token2_val = accualt_token2_val + ((accualt_token2_val * slippage_val) / 100)
+
+                    var expect_token2_val = parseFloat(token2_val)
 
                     //Cut 5 decimal place with no increase
                     //token2 value
-                    var $truncate_expect_token2_val = (this.truncateDecimals(accualt_token1_val * 100000) / 100000).toFixed(5)
+                    var $truncate_low_expect_token2_val = low_accualt_token2_val.toFixed(5)
+                    var $truncate_high_expect_token2_val = high_accualt_token2_val.toFixed(5)
 
                     //check amount token 2
-                    expect($truncate_expect_token2_val).to.be.equal((306.58858).toFixed(5))  //hard code must change
+                    expect(expect_token2_val).to.be.within(parseFloat($truncate_low_expect_token2_val), parseFloat($truncate_high_expect_token2_val))  //hard code must change
                 })
             })
         })
@@ -717,7 +735,7 @@ export class AddLiquidity {
     }
 
     validate_add_liquidity_success() {
-        
+
         //check add liquidity success dialog
         this.validate_add_liquidity_success_dialog()
         //check add liquidity success dialog message
@@ -727,85 +745,114 @@ export class AddLiquidity {
         this.click_close_add_liquidity_success_dialog()
         //check after close add liquidity success dialog
         this.validate_close_add_liquidity_success_dialog()
-        cy.wait(4000)
+        cy.wait(6000)
         //check your liquidity
         cy.get(validate_your_liquidity).then((data) => {
             expect(data.length).to.be.equal(1)
-            
+
         })
 
         //open your liquidity detail
         this.click_your_liquidity_btn()
 
         //check your liquidity name
-        cy.get(validate_your_liquidity_pool_name).then((data)=>{
+        cy.get(validate_your_liquidity_pool_name).then((data) => {
             var pool_name = data.text()
-            if(pool_name == token1_name+'/'+token2_name){
+            if (pool_name == token1_name + '/' + token2_name) {
 
-                expect(data.text()).to.be.equal(token1_name+'/'+token2_name)
+                expect(data.text()).to.be.equal(token1_name + '/' + token2_name)
 
-            }else if(pool_name == token2_name+'/'+token1_name){
+            } else if (pool_name == token2_name + '/' + token1_name) {
 
-                expect(data.text()).to.be.equal(token2_name+'/'+token1_name)
+                expect(data.text()).to.be.equal(token2_name + '/' + token1_name)
 
                 //set new value
                 //name
                 var clone_data = token1_name
                 token1_name = token2_name
                 token2_name = clone_data
-                
+
                 //amount
                 clone_data = token1_amount
                 token1_amount = token2_amount
                 token2_amount = clone_data
             }
-            
+
         })
 
         //check pool token 1 name
-        cy.get(validate_your_liquidity_pool_token1_name).then((data)=>{
-            expect(data.text()).to.be.equal('Pooled '+token1_name+' :')
+        cy.get(validate_your_liquidity_pool_token1_name).then((data) => {
+            expect(data.text()).to.be.equal('Pooled ' + token1_name + ' :')
         })
 
         //check pool token 2 name
-        cy.get(validate_your_liquidity_pool_token2_name).then((data)=>{
-            expect(data.text()).to.be.equal('Pooled '+token2_name+' :')
+        cy.get(validate_your_liquidity_pool_token2_name).then((data) => {
+            expect(data.text()).to.be.equal('Pooled ' + token2_name + ' :')
         })
 
         //check share pool name
-        cy.get(validate_your_liquidity_pool_sharepool).then((data)=>{
+        cy.get(validate_your_liquidity_pool_sharepool).then((data) => {
             expect(data.text()).to.be.equal('Share of Pool :')
         })
 
-        //check pool token 1 amount
-        cy.get(validate_your_liquidity_pool_token1_amount).then((data)=>{
+        //check your liquidity token 1 amount
+        cy.get(validate_your_liquidity_pool_token1_amount).then((data) => {
             var value = parseFloat(data.text())
-            var low_expect_value = parseFloat(token1_amount) - ((parseFloat(token1_amount)*parseFloat(slippage))/100)
-            var hight_expect_value = parseFloat(token1_amount) + ((parseFloat(token1_amount)*parseFloat(slippage))/100)
+            var low_expect_value = parseFloat(token1_amount) - ((parseFloat(token1_amount) * parseFloat(slippage)) / 100)
+            var hight_expect_value = parseFloat(token1_amount) + ((parseFloat(token1_amount) * parseFloat(slippage)) / 100)
 
-            expect(value).to.be.greaterThan(low_expect_value)
-            expect(value).to.be.lessThan(hight_expect_value)
+            //set token1 after add liquidity to variable
+            this.set_token1_after_add_amount(value)
+
+            //check your liquidity token 1 amount
+            expect(value).to.be.within(low_expect_value, hight_expect_value)
         })
 
-        //check pool token 2 amount
-        cy.get(validate_your_liquidity_pool_token2_amount).then((data)=>{
+        //check your liquidity token 2 amount
+        cy.get(validate_your_liquidity_pool_token2_amount).then((data) => {
             var value = parseFloat(data.text())
-            var low_expect_value = parseFloat(token2_amount) - ((parseFloat(token2_amount)*parseFloat(slippage))/100)
-            var hight_expect_value = parseFloat(token2_amount) + ((parseFloat(token2_amount)*parseFloat(slippage))/100)
+            var low_expect_value = parseFloat(token2_amount) - ((parseFloat(token2_amount) * parseFloat(slippage)) / 100)
+            var hight_expect_value = parseFloat(token2_amount) + ((parseFloat(token2_amount) * parseFloat(slippage)) / 100)
 
-            expect(value).to.be.greaterThan(low_expect_value)
-            expect(value).to.be.lessThan(hight_expect_value)
+            //set token2 after add liquidity to variable
+            this.set_token2_after_add_amount(value)
+
+            //check your liquidity token 2 amount
+            expect(value).to.be.within(low_expect_value, hight_expect_value)
         })
 
         //check pool share pool
-        cy.get(validate_your_liquidity_pool_sharepool_amount).then((data)=>{
+        cy.get(validate_your_liquidity_pool_sharepool_amount).then((data) => {
             var value = parseFloat(data.text())
-            
+
             expect(value).to.be.equal(value)
             //expect(value).to.be.equal(share_pool_amount)
-            console.log(share_pool_amount)
         })
 
+        //check balance token1 after add liquidity
+        //move to add liquidity page
+        this.click_add_liquidity_btn()
+        cy.wait(4000)
+        cy.get(balance_box).then((data) => {
+            //get balance after add liquidity
+            //balance token1
+            var accualt_balance_token1 = data.eq(0).text()
+            var accualt_balance_token1_val = parseFloat(accualt_balance_token1.replace(/[^0-9\.]+/g, ''))
+            //balance token2
+            var accualt_balance_token2 = data.eq(1).text()
+            var accualt_balance_token2_val = parseFloat(accualt_balance_token2.replace(/[^0-9\.]+/g, ''))
+
+
+            var expect_balance_token1 = parseFloat(balance_token1) - token1_after_add_amount
+            //check balance1 after add liquidity
+            expect(accualt_balance_token1_val).to.be.equal(expect_balance_token1)
+
+            var expect_balance_token2 = parseFloat(balance_token2) - token2_after_add_amount
+            //check balance2 after add liquidity
+            expect(accualt_balance_token2_val).to.be.equal(expect_balance_token2)
+
+        })
+        //check balance token2 after add liquidity
     }
 
     validate_add_liquidity_low_slippage(message: string) {
@@ -825,6 +872,9 @@ export class AddLiquidity {
     }
 
     add_liquidity_pool(token1: string, token2: string, amount: string, slippage: string) {
+
+
+        //check slippage 
         if (parseFloat(slippage) <= 1.0) {
             //click Setting 
             this.click_setting_btn()
@@ -843,17 +893,21 @@ export class AddLiquidity {
 
         //input token detail
         this.enter_liquidity_detail(token1, token2, amount)
+        cy.wait(2000)
+        //get balance token1&2 
+        this.get_balance_before_add_liquidity()
+        cy.wait(100)
         //click open dialog
         this.click_supply_btn()
         cy.wait(300)
-        
+
         //get liquidity detail
         this.get_liquidity_detail()
         this.set_slippage(slippage)
 
         //click confirm
         this.click_confirm_on_confirm_liquidity_dialog()
-         
+
     }
 
     //use for call from other test
@@ -878,11 +932,25 @@ export class AddLiquidity {
         this.enter_liquidity_detail(token1, token2, amount)
         //click open dialog
         this.click_supply_btn()
-        cy.wait(300)  
+        cy.wait(300)
+    }
+
+    get_balance_before_add_liquidity() {
+        cy.get(balance_box).then((data) => {
+            //balance token1
+            var balance_tk1 = data.eq(0).text()
+            //call set balance1 to variable
+            this.set_balance_token1(balance_tk1.replace(/[^0-9\.]+/g, ''))
+
+            //balance token2
+            var balance_tk2 = data.eq(1).text()
+            //call set balance2 to variable
+            this.set_balance_token2(balance_tk2.replace(/[^0-9\.]+/g, ''))
+        })
     }
 
     get_liquidity_detail() {
-             //get token 1 name
+        //get token 1 name
         cy.get(validate_confirm_liquidity_dialog_token1).then((data) => {
             this.set_token1_name(data.text())
         })
@@ -907,22 +975,34 @@ export class AddLiquidity {
         })
     }
     set_token1_name(a: string) {
-        token1_name = a 
+        token1_name = a
     }
     set_token2_name(b: string) {
-        token2_name = b 
+        token2_name = b
     }
     set_token1_amount(c: string) {
-        token1_amount = c 
+        token1_amount = c
     }
     set_token2_amount(d: string) {
-        token2_amount = d 
+        token2_amount = d
     }
     set_sharepol_amount(e: string) {
-        share_pool_amount = e 
+        share_pool_amount = e
     }
     set_slippage(f: string) {
-        slippage = f 
+        slippage = f
+    }
+    set_balance_token1(g: string) {
+        balance_token1 = g
+    }
+    set_balance_token2(h: string) {
+        balance_token2 = h
+    }
+    set_token1_after_add_amount(i: number) {
+        token1_after_add_amount = i
+    }
+    set_token2_after_add_amount(j: number) {
+        token2_after_add_amount = j
     }
 }
 
