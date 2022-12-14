@@ -71,6 +71,7 @@ let validate_close_confirm_liquidity_dialog = '.MuiPaper-root > .text-black'
 let validate_click_confirm_on_confirm_liquidity_dialog = '#swal2-title'
 let validate_insufficien_balance_notification = '#approve-token-and-supply > .space-y-3 > .MuiButtonBase-root'
 let validate_reject_transaction_notification = '#swal2-title'
+let validate_low_slippage_notification = '#swal2-title'
 let validate_add_liquidity_success_dialog_message = '.absolute'
 let validate_add_liquidity_success_dialog = '.MuiPaper-root > .text-black'
 let validate_close_add_liquidity_success_dialog = '.MuiPaper-root > .text-black'
@@ -734,6 +735,10 @@ export class AddLiquidity {
         cy.get(validate_reject_transaction_notification).should('contain', message)
     }
 
+    validate_low_slippage(message: string) {
+        cy.get(validate_low_slippage_notification).should('contain', message)
+    }
+
     validate_add_liquidity_success() {
 
         //check add liquidity success dialog
@@ -776,6 +781,10 @@ export class AddLiquidity {
                 clone_data = token1_amount
                 token1_amount = token2_amount
                 token2_amount = clone_data
+
+                clone_data = balance_token1
+                balance_token1 = balance_token2
+                balance_token2 = clone_data
             }
 
         })
@@ -832,7 +841,23 @@ export class AddLiquidity {
         //check balance token1 after add liquidity
         //move to add liquidity page
         this.click_add_liquidity_btn()
-        cy.wait(4000)
+        cy.wait(500)
+
+        //click open select token dialog
+        this.click_select_token_1_dialog_btn()
+        //select token 1
+        cy.get('body').then((data)=>{
+            this.click_token_from_dialog_token_list(token1_name)
+        })
+        
+        //click open select token dialog
+        this.click_select_token_2_dialog_btn()
+        //select token 1
+        cy.get('body').then((data)=>{
+            this.click_token_from_dialog_token_list(token2_name)
+        })
+        cy.wait(2500)
+
         cy.get(balance_box).then((data) => {
             //get balance after add liquidity
             //balance token1
@@ -842,14 +867,23 @@ export class AddLiquidity {
             var accualt_balance_token2 = data.eq(1).text()
             var accualt_balance_token2_val = parseFloat(accualt_balance_token2.replace(/[^0-9\.]+/g, ''))
 
-
-            var expect_balance_token1 = parseFloat(balance_token1) - token1_after_add_amount
+            var low_expect_balance_token1 = parseFloat(balance_token1) - (token1_after_add_amount + ((token1_after_add_amount * 0.1) / 100))
+            var high_expect_balance_token1 = parseFloat(balance_token1) - (token1_after_add_amount - ((token1_after_add_amount * 0.1) / 100))
+            console.log(balance_token1)
+            console.log(balance_token2)
+            console.log(token1_after_add_amount)
+            console.log(token2_after_add_amount)
+            console.log(low_expect_balance_token1)
+            console.log(high_expect_balance_token1)
+            
             //check balance1 after add liquidity
-            expect(accualt_balance_token1_val).to.be.equal(expect_balance_token1)
+            expect(accualt_balance_token1_val).to.be.within(low_expect_balance_token1,high_expect_balance_token1)
 
-            var expect_balance_token2 = parseFloat(balance_token2) - token2_after_add_amount
+            var low_expect_balance_token2 = parseFloat(balance_token2) - (token2_after_add_amount + ((token2_after_add_amount * 0.1) / 100))
+            var high_expect_balance_token2 = parseFloat(balance_token2) - (token2_after_add_amount - ((token2_after_add_amount * 0.1) / 100))
+
             //check balance2 after add liquidity
-            expect(accualt_balance_token2_val).to.be.equal(expect_balance_token2)
+            expect(accualt_balance_token2_val).to.be.within(low_expect_balance_token2,high_expect_balance_token2)
 
         })
         //check balance token2 after add liquidity
@@ -875,7 +909,7 @@ export class AddLiquidity {
 
 
         //check slippage 
-        if (parseFloat(slippage) <= 1.0) {
+        if (parseFloat(slippage) > 0.0 && parseFloat(slippage) <= 1.0) {
             //click Setting 
             this.click_setting_btn()
             //click slippage

@@ -193,9 +193,9 @@ export class Remove_Liquidity {
         //clear slippage textbox
         this.clear_slippage_textbox()
         //enter slippage 
-        this.enter_slippage_textbox('90')
+        this.enter_slippage_textbox('0.5')
         //set slippage
-        this.set_slippage('90')
+        this.set_slippage('0.5')
         //close setting dialog
         this.click_close_setting_btn()
 

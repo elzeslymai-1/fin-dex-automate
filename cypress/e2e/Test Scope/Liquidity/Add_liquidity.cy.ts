@@ -1008,7 +1008,7 @@ describe('Add Liquidity Flow Test', () => {
     it('Reject Transaction on Metamask', () => {
 
         // liquidity detail
-        addLiquidity.add_liquidity_pool('KUSDC', 'KUSDT', '100', '90')
+        addLiquidity.add_liquidity_pool('KUSDC', 'KUSDT', '1000', '1')
         cy.wait(3000)
         //confirm on metamask
         cy.rejectMetamaskTransaction()
@@ -1017,70 +1017,68 @@ describe('Add Liquidity Flow Test', () => {
         addLiquidity.validate_reject_transaction('user rejected transaction')
     })
 
-    it.skip('Add Liquidity With Lower Slippage', () => {
+    it('Add Liquidity With Lower Slippage', () => {
         //liquidity detail
-        addLiquidity.add_liquidity_pool('KUSDC', 'KUSDT', '100', '0%')
-        cy.wait(3000)
-        cy.confirmMetamaskTransaction()
+        addLiquidity.add_liquidity_pool('KUSDC', 'KUSDT', '1000', '0')
+
         //assert
-        cy.wait(25000)
-        addLiquidity.validate_add_liquidity_success()
+        addLiquidity.validate_low_slippage('cannot estimate gas')
     })
 
-    it.skip('Add Liquidity Success With Slippage 0.1%', () => {
+    it('Add Liquidity Success With Slippage 0.1%', () => {
         //liquidity detail
-        addLiquidity.add_liquidity_pool('KUSDC', 'KUSDT', '100', '0.1%')
+        addLiquidity.add_liquidity_pool('KUSDC', 'KUSDT', '1000', '0.1')
         cy.wait(3000)
         cy.confirmMetamaskTransaction()
+
         //assert
         cy.wait(25000)
         addLiquidity.validate_add_liquidity_success()
+
+        //remove liquidity
+        remove.call_remove_liquidity_pool()
     })
 
-    it.skip('Add Liquidity Success With Slippage 0.5%', () => {
+    it('Add Liquidity Success With Slippage 0.5%', () => {
         //liquidity detail
-        addLiquidity.add_liquidity_pool('KUSDC', 'KUSDT', '100', '0.5%')
+        addLiquidity.add_liquidity_pool('KUSDC', 'KUB', '300', '0.5')
         cy.wait(3000)
         cy.confirmMetamaskTransaction()
         //assert
         cy.wait(25000)
         addLiquidity.validate_add_liquidity_success()
+
+        //remove liquidity
+        remove.call_remove_liquidity_pool()
     })
 
-    it.skip('Add Liquidity Success With Slippage 1%', () => {
+    it('Add Liquidity Success With Slippage 1%', () => {
         //liquidity detail
-        addLiquidity.add_liquidity_pool('KUSDC', 'KUSDT', '100', '1.0%')
+        addLiquidity.add_liquidity_pool('KUB', 'KUSDT', '2', '1.0')
         cy.wait(3000)
         cy.confirmMetamaskTransaction()
         //assert
         cy.wait(25000)
         addLiquidity.validate_add_liquidity_success()
+
+        //remove liquidity
+        remove.call_remove_liquidity_pool()
     })
 
-    it('Add Liquidity Success With Custom Slippage 90%', () => {
+    it('Add Liquidity Success With Custom Slippage 10%', () => {
         //liquidity detail
-        addLiquidity.add_liquidity_pool('KUSDC', 'KUSDT', '1000', '90')
+        addLiquidity.add_liquidity_pool('KUSDC', 'KUSDT', '1000', '10')
         cy.wait(3000)
         cy.confirmMetamaskTransaction()
         //assert
         cy.wait(25000)
         addLiquidity.validate_add_liquidity_success()
-    })
 
-    it.skip('Add Liquidity Success With Custom Slippage 90%', () => {
-        //liquidity detail
-        addLiquidity.add_liquidity_pool('KUSDC', 'KUB', '500', '90')
-        cy.wait(3000)
-        cy.confirmMetamaskTransaction()
-        //assert
-        cy.wait(25000)
-
-        addLiquidity.validate_add_liquidity_success()
+        //remove liquidity
+        remove.call_remove_liquidity_pool()
     })
 
     after(() => {
-        cy.wait(1000)
-        remove.call_remove_liquidity_pool()
         cy.wait(200)
         cy.disconnectMetamaskWalletFromAllDapps()
         cy.visit(base_url)
