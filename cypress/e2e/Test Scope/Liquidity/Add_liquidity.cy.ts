@@ -200,7 +200,7 @@ describe('Check Element Add Liquidity Page', () => {
     })
 
     afterEach(() => {
-        cy.wait(100)
+        cy.wait(300)
     })
 })
 
@@ -797,52 +797,83 @@ describe('Check Rate Prices And Pool Share Test', () => {
         cy.wait(700)
     })
 
-    it.skip('Check rate => KUSDC & KUSDT', () => {
+    it('Check rate => KUSDC & KUSDT', () => {
+        addLiquidity.click_setting_btn()
+        //click slippage
+        addLiquidity.click_slippage('0.5')
+        //click close setting dialog
+        addLiquidity.click_close_setting_btn()
+        cy.wait(1500)
         //input token detail
-        addLiquidity.enter_liquidity_detail('KUSDC', 'KUSDT', '10')
+        addLiquidity.enter_liquidity_detail('KUSDC', 'KUSDT', '100')
 
         //assert
-        addLiquidity.validate_price_rate()
+        addLiquidity.validate_price_rate('0.5') // slippage
     })
 
     it('Check rate => KUSDC & KUB', () => {
+        addLiquidity.click_setting_btn()
+        //click slippage
+        addLiquidity.click_slippage('0.5')
+        //click close setting dialog
+        addLiquidity.click_close_setting_btn()
         //input token detail
-        addLiquidity.enter_liquidity_detail('KUSDC', 'KUB', '10')
+        addLiquidity.enter_liquidity_detail('KUSDC', 'KUB', '100')
 
         //assert
-        addLiquidity.validate_price_rate()
+        addLiquidity.validate_price_rate('0.5')
     })
 
     it('Check rate => KUB & KUSDT', () => {
+        addLiquidity.click_setting_btn()
+        //click slippage
+        addLiquidity.click_slippage('0.5')
+        //click close setting dialog
+        addLiquidity.click_close_setting_btn()
         //input token detail
-        addLiquidity.enter_liquidity_detail('KUB', 'KUSDT', '10')
+        addLiquidity.enter_liquidity_detail('KUB', 'KUSDT', '100')
 
         //assert
-        addLiquidity.validate_price_rate()
+        addLiquidity.validate_price_rate('0.5')
     })
 
     it('Check rate => KUB & KUSDC', () => {
+        addLiquidity.click_setting_btn()
+        //click slippage
+        addLiquidity.click_slippage('0.5')
+        //click close setting dialog
+        addLiquidity.click_close_setting_btn()
         //input token detail
-        addLiquidity.enter_liquidity_detail('KUB', 'KUSDC', '10')
+        addLiquidity.enter_liquidity_detail('KUB', 'KUSDC', '100')
 
         //assert
-        addLiquidity.validate_price_rate()
+        addLiquidity.validate_price_rate('0.5')
     })
 
-    it.skip('Check rate => KUSDT & KUSDC', () => {
+    it('Check rate => KUSDT & KUSDC', () => {
+        addLiquidity.click_setting_btn()
+        //click slippage
+        addLiquidity.click_slippage('0.5')
+        //click close setting dialog
+        addLiquidity.click_close_setting_btn()
         //input token detail
-        addLiquidity.enter_liquidity_detail('KUSDT', 'KUSDC', '10')
+        addLiquidity.enter_liquidity_detail('KUSDT', 'KUSDC', '100')
 
         //assert
-        addLiquidity.validate_price_rate()
+        addLiquidity.validate_price_rate('0.5')
     })
 
     it('Check rate => KUSDT & KUB', () => {
+        addLiquidity.click_setting_btn()
+        //click slippage
+        addLiquidity.click_slippage('0.5')
+        //click close setting dialog
+        addLiquidity.click_close_setting_btn()
         //input token detail
-        addLiquidity.enter_liquidity_detail('KUSDT', 'KUB', '10')
+        addLiquidity.enter_liquidity_detail('KUSDT', 'KUB', '100')
 
         //assert
-        addLiquidity.validate_price_rate()
+        addLiquidity.validate_price_rate('0.5')
     })
 
     afterEach(() => {
@@ -863,6 +894,13 @@ describe('Confirm Liquidity Dialog', () => {
         addLiquidity.click_connect_wallet()
         addLiquidity.click_add_liquidity_btn()
         cy.wait(700)
+
+        //open setting dialog
+        addLiquidity.click_setting_btn()
+        //click slippage
+        addLiquidity.click_slippage('0.5')
+        //click close setting dialog
+        addLiquidity.click_close_setting_btn()
     })
 
     it('Open Confirm Lequidity Dialog', () => {
@@ -887,7 +925,7 @@ describe('Confirm Liquidity Dialog', () => {
         addLiquidity.click_supply_btn()
 
         //assert
-        addLiquidity.validate_confirm_liquidity_dialog('KUSDT', 'KUSDC')
+        addLiquidity.validate_confirm_liquidity_dialog('KUSDT', 'KUSDC','0.5') //Token1,Token2,Slippage
     })
 
     it('Close Confirm Lequidity Dialog', () => {
@@ -903,7 +941,14 @@ describe('Confirm Liquidity Dialog', () => {
         //addLiquidity.connect_wallet()
         addLiquidity.click_connect_wallet()
         addLiquidity.click_add_liquidity_btn()
-        cy.wait(700)
+        cy.wait(1000)
+
+        //open setting dialog
+        addLiquidity.click_setting_btn()
+        //click slippage
+        addLiquidity.click_slippage('0.5')
+        //click close setting dialog
+        addLiquidity.click_close_setting_btn()
 
         addLiquidity.enter_liquidity_detail('KUSDT', 'KUSDC', '100')
         //click open dialog
@@ -920,12 +965,12 @@ describe('Confirm Liquidity Dialog', () => {
     })
 
     afterEach(() => {
-        cy.wait(200)
+        cy.wait(300)
     })
 })
 
 
-describe.only('Add Liquidity Flow Test', () => {
+describe('Add Liquidity Flow Test', () => {
     beforeEach(() => {
         cy.viewport(1920, 1080)
         cy.visit(base_url)
@@ -941,7 +986,7 @@ describe.only('Add Liquidity Flow Test', () => {
         //addLiquidity.connect_wallet()
     })
 
-    it('Insuffecien Token 1 Balance',()=>{
+    it('Insuffecien Token 1 Balance', () => {
         //input token detail
         addLiquidity.enter_liquidity_detail('KUB', 'KUSDT', '100')
         //Check enable token
@@ -950,9 +995,9 @@ describe.only('Add Liquidity Flow Test', () => {
         addLiquidity.validate_insufficien_balance()
     })
 
-    it('Insuffecien Token 2 Balance',()=>{
+    it('Insuffecien Token 2 Balance', () => {
         //input token detail
-        addLiquidity.enter_liquidity_detail('KUSDC', 'KUB', '10000')        
+        addLiquidity.enter_liquidity_detail('KUSDC', 'KUB', '1000000')
         //Check enable token
         addLiquidity.eneble_token()
 
@@ -960,90 +1005,82 @@ describe.only('Add Liquidity Flow Test', () => {
         addLiquidity.validate_insufficien_balance()
     })
 
-    it('Reject Transaction on Metamask',()=>{
-      
+    it('Reject Transaction on Metamask', () => {
+
         // liquidity detail
-        addLiquidity.add_liquidity_pool('KUSDC','KUSDT','100','90')
+        addLiquidity.add_liquidity_pool('KUSDC', 'KUSDT', '1000', '1')
         cy.wait(3000)
         //confirm on metamask
         cy.rejectMetamaskTransaction()
 
         //assert
         addLiquidity.validate_reject_transaction('user rejected transaction')
-    }) 
+    })
 
-    it.skip('Add Liquidity With Lower Slippage',()=>{
+    it('Add Liquidity With Lower Slippage', () => {
         //liquidity detail
-        addLiquidity.add_liquidity_pool('KUSDC','KUSDT','100','0%')
+        addLiquidity.add_liquidity_pool('KUSDC', 'KUSDT', '1000', '0')
+
+        //assert
+        addLiquidity.validate_low_slippage('cannot estimate gas')
+    })
+
+    it('Add Liquidity Success With Slippage 0.1%', () => {
+        //liquidity detail
+        addLiquidity.add_liquidity_pool('KUSDC', 'KUSDT', '1000', '0.1')
         cy.wait(3000)
         cy.confirmMetamaskTransaction()
+
         //assert
         cy.wait(25000)
         addLiquidity.validate_add_liquidity_success()
-    })
 
-    it.skip('Add Liquidity Success With Slippage 0.1%',()=>{
-        //liquidity detail
-        addLiquidity.add_liquidity_pool('KUSDC','KUSDT','100','0.1%')
-        cy.wait(3000)
-        cy.confirmMetamaskTransaction()
-        //assert
-        cy.wait(25000)
-        addLiquidity.validate_add_liquidity_success()
-    })
-
-    it.skip('Add Liquidity Success With Slippage 0.5%',()=>{
-        //liquidity detail
-        addLiquidity.add_liquidity_pool('KUSDC','KUSDT','100','0.5%')
-        cy.wait(3000)
-        cy.confirmMetamaskTransaction()
-        //assert
-        cy.wait(25000)
-        addLiquidity.validate_add_liquidity_success()
-    })
-
-    it.skip('Add Liquidity Success With Slippage 1%',()=>{
-        //liquidity detail
-        addLiquidity.add_liquidity_pool('KUSDC','KUSDT','100','1.0%')
-        cy.wait(3000)
-        cy.confirmMetamaskTransaction()
-        //assert
-        cy.wait(25000)
-        addLiquidity.validate_add_liquidity_success()
-    })
-
-    it('Add Liquidity Success With Custom Slippage 90%',()=>{
-        //liquidity detail
-        addLiquidity.add_liquidity_pool('KUSDC','KUSDT','1000','90')
-        cy.wait(3000)
-        cy.confirmMetamaskTransaction()
-        //assert
-        cy.wait(25000)
-        
-        addLiquidity.validate_add_liquidity_success()
-    })
-
-    it.skip('Add Liquidity Success With Custom Slippage 90%',()=>{
-        //liquidity detail
-        addLiquidity.add_liquidity_pool('KUSDC','KUB','500','90')
-        cy.wait(3000)
-        cy.confirmMetamaskTransaction()
-        //assert
-        cy.wait(25000)
-        
-        addLiquidity.validate_add_liquidity_success()
-    })
-
-    after(()=>{
-        cy.wait(1000)
+        //remove liquidity
         remove.call_remove_liquidity_pool()
+    })
+
+    it('Add Liquidity Success With Slippage 0.5%', () => {
+        //liquidity detail
+        addLiquidity.add_liquidity_pool('KUSDC', 'KUB', '300', '0.5')
+        cy.wait(3000)
+        cy.confirmMetamaskTransaction()
+        //assert
+        cy.wait(25000)
+        addLiquidity.validate_add_liquidity_success()
+
+        //remove liquidity
+        remove.call_remove_liquidity_pool()
+    })
+
+    it('Add Liquidity Success With Slippage 1%', () => {
+        //liquidity detail
+        addLiquidity.add_liquidity_pool('KUB', 'KUSDT', '2', '1.0')
+        cy.wait(3000)
+        cy.confirmMetamaskTransaction()
+        //assert
+        cy.wait(25000)
+        addLiquidity.validate_add_liquidity_success()
+
+        //remove liquidity
+        remove.call_remove_liquidity_pool()
+    })
+
+    it('Add Liquidity Success With Custom Slippage 10%', () => {
+        //liquidity detail
+        addLiquidity.add_liquidity_pool('KUSDC', 'KUSDT', '1000', '10')
+        cy.wait(3000)
+        cy.confirmMetamaskTransaction()
+        //assert
+        cy.wait(25000)
+        addLiquidity.validate_add_liquidity_success()
+
+        //remove liquidity
+        remove.call_remove_liquidity_pool()
+    })
+
+    after(() => {
         cy.wait(200)
         cy.disconnectMetamaskWalletFromAllDapps()
         cy.visit(base_url)
     })
 })
-
-    // after(() => {
-    //     //cy.disconnectMetamaskWalletFromAllDapps()
-    //     //cy.visit(base_url)
-    // })
