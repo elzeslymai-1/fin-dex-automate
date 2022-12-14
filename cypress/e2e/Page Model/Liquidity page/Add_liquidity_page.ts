@@ -838,7 +838,7 @@ export class AddLiquidity {
             //expect(value).to.be.equal(share_pool_amount)
         })
 
-        //check balance token1 after add liquidity
+        //check balance after add liquidity
         //move to add liquidity page
         this.click_add_liquidity_btn()
         cy.wait(500)
@@ -869,12 +869,6 @@ export class AddLiquidity {
 
             var low_expect_balance_token1 = parseFloat(balance_token1) - (token1_after_add_amount + ((token1_after_add_amount * 0.1) / 100))
             var high_expect_balance_token1 = parseFloat(balance_token1) - (token1_after_add_amount - ((token1_after_add_amount * 0.1) / 100))
-            console.log(balance_token1)
-            console.log(balance_token2)
-            console.log(token1_after_add_amount)
-            console.log(token2_after_add_amount)
-            console.log(low_expect_balance_token1)
-            console.log(high_expect_balance_token1)
             
             //check balance1 after add liquidity
             expect(accualt_balance_token1_val).to.be.within(low_expect_balance_token1,high_expect_balance_token1)
@@ -886,7 +880,7 @@ export class AddLiquidity {
             expect(accualt_balance_token2_val).to.be.within(low_expect_balance_token2,high_expect_balance_token2)
 
         })
-        //check balance token2 after add liquidity
+        
     }
 
     validate_add_liquidity_low_slippage(message: string) {
@@ -965,8 +959,6 @@ export class AddLiquidity {
         //input token detail
         this.enter_liquidity_detail(token1, token2, amount)
         //click open dialog
-        this.click_supply_btn()
-        cy.wait(300)
     }
 
     get_balance_before_add_liquidity() {
