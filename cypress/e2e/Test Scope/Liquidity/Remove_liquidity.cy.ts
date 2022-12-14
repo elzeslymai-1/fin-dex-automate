@@ -18,7 +18,7 @@ describe('Remove Liquidity Flow', () => {
             //remove.click_connect_wallet()
 
             //add liquidity -token1 -token2 -amount -slippage
-            remove.add_liquidity_pool('KUSDC', 'KUSDT', '1000', '90')
+            remove.add_liquidity_pool('KUSDC', 'KUSDT', '1000', '0.5')
 
             cy.wait(4000)
             //setting slippage & go to remove liquidity page
@@ -129,19 +129,22 @@ describe('Remove Liquidity Flow', () => {
 
             //remove.connect_wallet()
             remove.click_connect_wallet()
-
-            //remove.add_liquidity_pool('KUSDC','KUSDT','1000','90')
-
-            //setting slippage & go to remove liquidity page
-            remove.go_to_remove_liquidity_page()
-            cy.wait(2000)
         })
 
         before(() => {
             cy.viewport(1920, 1080)
+            cy.visit(base_url)
+
+            //remove.connect_wallet()
+            remove.click_connect_wallet()
+            //remove.add_liquidity_pool('KUSDC','KUSDT','1000','0.5')
         })
 
         it('Reject Remove token', () => {
+            //setting slippage & go to remove liquidity page
+            remove.go_to_remove_liquidity_page()
+            cy.wait(2000)
+
             //select 25%
             remove.click_remove_percen('25')
             //click enable
@@ -162,31 +165,62 @@ describe('Remove Liquidity Flow', () => {
             remove.validate_notification('user rejected transaction')
         })
 
-        it.skip('Remove Liquidity as 25%', () => {
-            //remove liquidity pool  -percen
-            remove.remove_liquidity_pool('100')
+        it('Remove Liquidity as 25%', () => {
+            //setting slippage & go to remove liquidity page
+            remove.go_to_remove_liquidity_page()
+            cy.wait(2000)
 
+            //remove liquidity pool  -percen
+            remove.remove_liquidity_pool('25')
+    
             //assert
-            remove.validate_remove_liquidity_success('100')
+            remove.validate_remove_liquidity_success('25')
+
+            //after
+            remove.call_remove_liquidity_pool()
         })
 
-        it.skip('Remove Liquidity as 50%', () => {
+        it('Remove Liquidity as 50%', () => {
+            //add liquidity
+            remove.add_liquidity_pool('KUSDC','KUSDT','1000','0.5')
+            //setting slippage & go to remove liquidity page
+            remove.go_to_remove_liquidity_page()
+            cy.wait(2000)
+
             //remove liquidity pool  -percen
-            remove.remove_liquidity_pool('100')
+            remove.remove_liquidity_pool('50')
 
             //assert
-            remove.validate_remove_liquidity_success('100')
+            remove.validate_remove_liquidity_success('50')
+
+            //after
+            remove.call_remove_liquidity_pool()
         })
 
-        it.skip('Remove Liquidity as 75%', () => {
+        it('Remove Liquidity as 75%', () => {
+            //add liquidity
+            remove.add_liquidity_pool('KUSDC','KUSDT','1000','0.5')
+            //setting slippage & go to remove liquidity page
+            remove.go_to_remove_liquidity_page()
+            cy.wait(2000)
+
             //remove liquidity pool  -percen
-            remove.remove_liquidity_pool('100')
+            remove.remove_liquidity_pool('75')
 
             //assert
-            remove.validate_remove_liquidity_success('100')
+            remove.validate_remove_liquidity_success('75')
+
+            //after
+            remove.call_remove_liquidity_pool()
         })
 
         it('Remove Liquidity as 100%', () => {
+            //add liquidity
+            remove.add_liquidity_pool('KUSDC','KUSDT','1000','0.5')
+            //setting slippage & go to remove liquidity page
+            remove.go_to_remove_liquidity_page()
+            cy.wait(2000)
+
             //remove liquidity pool  -percen
             remove.remove_liquidity_pool('100')
 
