@@ -44,7 +44,8 @@ let validate_setting_button = '.text-xl'
 let validate_slippage_01_button = '.grid > :nth-child(1) > .font-semibold'
 let validate_slippage_05_button = '.grid-cols-1 > .flex-col > .grid > :nth-child(2) > .font-semibold'
 let validate_slippage_1_button = '.grid > :nth-child(3) > .font-semibold'
-let validate_slippage_textbox = ':nth-child(4) > .flex'
+let validate_slippage_textbox = ':nth-child(4) > .flex > .bg-transparent'
+let validate_slippage_textbox_class = ':nth-child(4) > .flex'
 let validate_tx_deadline_textbox = '.text-red-500'
 let validate_close_setting_button = '[role="dialog"]'
 let validate_select_token_dialog = '[role="dialog"]'
@@ -365,10 +366,36 @@ export class AddLiquidity {
         cy.get(validate_slippage_1_button).should('have.attr', 'class').and('contain', 'bg-text-base2 text-white')
     }
 
-    validate_slippage_textbox(message: string) {
-        //cy.get(validate_slippage_textbox).should('have.text', message)
-        cy.get(validate_slippage_textbox).should('have.attr', 'class').and('contain', 'bg-text-base2 text-white')
+    validate_slippage_textbox(message: string, value: string) {
+        switch (message) {
+            case 'Character':
+                cy.get(validate_slippage_textbox).should('be.empty')
+                break
+            case 'Symbol':
+                cy.get(validate_slippage_textbox).should('be.empty')
+                break
+            case 'Negative':
+                cy.get(validate_slippage_textbox).should('be.empty')
+                break
+            case '4 Decimal':
+                cy.get(validate_slippage_textbox)
+                    .should('have.attr', 'value')
+                    .and('contain', value)
+
+                cy.get(validate_slippage_textbox_class)
+                    .should('have.attr', 'class')
+                    .and('contain', 'bg-text-base2 text-white')
+                break
+            case 'Maximum':
+                cy.get(validate_slippage_textbox)
+                    .should('have.attr', 'value')
+                    .and('contain', value)
+                cy.get(validate_slippage_textbox_class)
+                    .should('have.attr', 'class')
+                break
+        }
     }
+
 
     validate_tx_deadline_default(message: string) {
         cy.get(tx_deadline_textbox).should('have.attr', 'value').and('equal', message)
@@ -380,13 +407,13 @@ export class AddLiquidity {
                 cy.get(validate_tx_deadline_textbox).should('have.text', 'The minimum tx deadline is 20 mins')
                 break
             case 'character':
-                cy.get(tx_deadline_textbox).should('have.attr', 'value').and('equal', 'NaN')
+                cy.get(tx_deadline_textbox).should('have.attr', 'value').and('equal', '0')
                 break
             case 'symbol':
-                cy.get(tx_deadline_textbox).should('have.attr', 'value').and('equal', 'NaN')
+                cy.get(tx_deadline_textbox).should('have.attr', 'value').and('equal', '0')
                 break
             case 'negative number':
-                cy.get(tx_deadline_textbox).should('have.attr', 'value').and('equal', 'NaN')
+                cy.get(tx_deadline_textbox).should('have.attr', 'value').and('equal', '20')
                 break
             case '4 decimal places':
                 cy.get(tx_deadline_textbox).should('have.attr', 'value').and('equal', '20')
@@ -846,14 +873,14 @@ export class AddLiquidity {
         //click open select token dialog
         this.click_select_token_1_dialog_btn()
         //select token 1
-        cy.get('body').then((data)=>{
+        cy.get('body').then((data) => {
             this.click_token_from_dialog_token_list(token1_name)
         })
-        
+        cy.wait(500)
         //click open select token dialog
         this.click_select_token_2_dialog_btn()
         //select token 1
-        cy.get('body').then((data)=>{
+        cy.get('body').then((data) => {
             this.click_token_from_dialog_token_list(token2_name)
         })
         cy.wait(2500)
@@ -869,18 +896,18 @@ export class AddLiquidity {
 
             var low_expect_balance_token1 = parseFloat(balance_token1) - (token1_after_add_amount + ((token1_after_add_amount * 0.1) / 100))
             var high_expect_balance_token1 = parseFloat(balance_token1) - (token1_after_add_amount - ((token1_after_add_amount * 0.1) / 100))
-            
+
             //check balance1 after add liquidity
-            expect(accualt_balance_token1_val).to.be.within(low_expect_balance_token1,high_expect_balance_token1)
+            expect(accualt_balance_token1_val).to.be.within(low_expect_balance_token1, high_expect_balance_token1)
 
             var low_expect_balance_token2 = parseFloat(balance_token2) - (token2_after_add_amount + ((token2_after_add_amount * 0.1) / 100))
             var high_expect_balance_token2 = parseFloat(balance_token2) - (token2_after_add_amount - ((token2_after_add_amount * 0.1) / 100))
 
             //check balance2 after add liquidity
-            expect(accualt_balance_token2_val).to.be.within(low_expect_balance_token2,high_expect_balance_token2)
+            expect(accualt_balance_token2_val).to.be.within(low_expect_balance_token2, high_expect_balance_token2)
 
         })
-        
+
     }
 
     validate_add_liquidity_low_slippage(message: string) {
