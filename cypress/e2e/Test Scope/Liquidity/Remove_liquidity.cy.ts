@@ -26,11 +26,13 @@ describe('Remove Liquidity Flow', () => {
             cy.wait(2000)
         })
 
+        //ACT
         it('No input Amount To Remove', () => {
             //assert
             remove.validate_no_input_amount_remove()
         })
 
+        //ACT
         it('Select 25% Liquidity To Remove', () => {
             cy.wait(500)
             //select 25%
@@ -40,6 +42,7 @@ describe('Remove Liquidity Flow', () => {
             remove.validate_25_percen()
         })
 
+        //ACT
         it('Select 50% Liquidity To Remove', () => {
             cy.wait(1000)
             //select 50%
@@ -49,6 +52,7 @@ describe('Remove Liquidity Flow', () => {
             remove.validate_50_percen()
         })
 
+        //ACT
         it('Select 75% Liquidity To Remove', () => {
             //select 75%
             remove.click_75_percen()
@@ -57,6 +61,7 @@ describe('Remove Liquidity Flow', () => {
             remove.validate_75_percen()
         })
 
+        //ACT
         it('Select 100% Liquidity To Remove', () => {
             //select 100%
             remove.click_100_percen()
@@ -65,31 +70,37 @@ describe('Remove Liquidity Flow', () => {
             remove.validate_100_percen()
         })
 
+        //ACT
         it('Check slippage', () => {
             //assert
             remove.validate_slippage()
         })
 
+        //ACT
         it('Check Liquidity Pool in Your Wallet => Liquidity Pool Name', () => {
             //assert
             remove.validate_liquidity_pool_name()
         })
 
+        //ACT
         it('Check Liquidity Pool in Your Wallet => Sharepool', () => {
             //assert
             remove.validate_sharepool()
         })
 
+        //ACT
         it('Check Liquidity Pool in Your Wallet => Token 1 Amount', () => {
             //assert
             remove.validate_liquidity_pool_token1_amount()
         })
 
+        //ACT
         it('Check Liquidity Pool in Your Wallet => Token 2 Amount', () => {
             //assert
             remove.validate_liquidity_pool_token2_amount()
         })
 
+        //ACT
         it('Reject Enable token', () => {
             //select 25%
             remove.click_25_percen()
@@ -102,6 +113,7 @@ describe('Remove Liquidity Flow', () => {
             remove.validate_notification('user rejected transaction')
         })
 
+        //ACT
         it('Check Detail Confirm Remove Liquidity Dialog', () => {
             cy.wait(1000)
             //click enable
@@ -122,7 +134,7 @@ describe('Remove Liquidity Flow', () => {
         })
     })
 
-    context.only('Remove Liquidity Flow Test', () => {
+    context('Remove Liquidity Flow Test', () => {
         beforeEach(() => {
             cy.viewport(1920, 1080)
             cy.visit(base_url)
@@ -131,17 +143,9 @@ describe('Remove Liquidity Flow', () => {
             remove.click_connect_wallet()
         })
 
-        before(() => {
-            cy.viewport(1920, 1080)
-            cy.visit(base_url)
-
-            //remove.connect_wallet()
-            remove.click_connect_wallet()
-            remove.add_liquidity_pool('KUSDC','KUSDT','1000','0.5')
-        })
-
+        //ACT
         it('Reject Remove token', () => {
-            //setting slippage & go to remove liquidity page
+            //get balance after add liquidity > setting slippage > go to remove liquidity page
             remove.go_to_remove_liquidity_page()
             cy.wait(2000)
 
@@ -152,7 +156,7 @@ describe('Remove Liquidity Flow', () => {
             cy.wait(3000)
             //confirm on notification metamask and wait
             cy.confirmMetamaskPermissionToSpend()
-            cy.wait(30000)
+            cy.wait(25000)
             //click remove button
             remove.click_remove_btn()
             //click confirm remove button
@@ -165,14 +169,15 @@ describe('Remove Liquidity Flow', () => {
             remove.validate_notification('user rejected transaction')
         })
 
+        //ACT
         it('Remove Liquidity as 25%', () => {
-            //setting slippage & go to remove liquidity page
+            //get balance after add liquidity > setting slippage > go to remove liquidity page
             remove.go_to_remove_liquidity_page()
             cy.wait(2000)
 
             //remove liquidity pool  -percen
             remove.remove_liquidity_pool('25')
-    
+
             //assert
             remove.validate_remove_liquidity_success('25')
 
@@ -180,10 +185,10 @@ describe('Remove Liquidity Flow', () => {
             //remove.call_remove_liquidity_pool()
         })
 
+        //ACT
         it('Remove Liquidity as 50%', () => {
-            //add liquidity
-            //remove.add_liquidity_pool('KUSDC','KUSDT','1000','0.5')
-            //setting slippage & go to remove liquidity page
+
+            //get balance after add liquidity > setting slippage > go to remove liquidity page
             remove.go_to_remove_liquidity_page()
             cy.wait(2000)
 
@@ -193,14 +198,11 @@ describe('Remove Liquidity Flow', () => {
             //assert
             remove.validate_remove_liquidity_success('50')
 
-            //after
-            remove.call_remove_liquidity_pool()
         })
 
+        //ACT
         it('Remove Liquidity as 75%', () => {
-            //add liquidity
-            remove.add_liquidity_pool('KUSDC','KUSDT','1000','0.5')
-            //setting slippage & go to remove liquidity page
+            //get balance after add liquidity > setting slippage > go to remove liquidity page
             remove.go_to_remove_liquidity_page()
             cy.wait(2000)
 
@@ -210,14 +212,11 @@ describe('Remove Liquidity Flow', () => {
             //assert
             remove.validate_remove_liquidity_success('75')
 
-            //after
-            remove.call_remove_liquidity_pool()
         })
 
+        //ACT
         it('Remove Liquidity as 100%', () => {
-            //add liquidity
-            remove.add_liquidity_pool('KUSDC','KUSDT','1000','0.5')
-            //setting slippage & go to remove liquidity page
+            //get balance after add liquidity > setting slippage > go to remove liquidity page
             remove.go_to_remove_liquidity_page()
             cy.wait(2000)
 
@@ -233,9 +232,9 @@ describe('Remove Liquidity Flow', () => {
         })
     })
 
-    after(()=>{
+    after(() => {
         cy.wait(200)
-        // cy.disconnectMetamaskWalletFromAllDapps()
-        // cy.visit(base_url)
+        cy.disconnectMetamaskWalletFromAllDapps()
+        cy.visit(base_url)
     })
 })
