@@ -506,8 +506,28 @@ export class Remove_Liquidity {
         //remove.connect_wallet()
         this.click_connect_wallet()
         cy.wait(1500)
-        //setting slippage & go to remove liquidity page
-        this.go_to_remove_liquidity_page()
+
+        //click open setting dialog
+        this.click_setting_btn()
+        //clear slippage textbox
+        this.clear_slippage_textbox()
+        //enter slippage 
+        this.enter_slippage_textbox('0.5')
+        //set slippage
+        this.set_slippage('0.5')
+        //close setting dialog
+        this.click_close_setting_btn()
+
+        cy.wait(2000)
+        //click open detail your liquidity
+        this.click_your_liquidity_btn()
+
+        cy.wait(2500)
+        //get token amount into variable
+        this.get_token_amount_detail_from_your_liquidity_detail()
+
+        //click remove liquidity
+        this.click_remove_liquidity()
         cy.wait(2500)
         //select 25%
         this.click_remove_percen('100')

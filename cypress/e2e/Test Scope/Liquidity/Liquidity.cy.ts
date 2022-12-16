@@ -210,14 +210,18 @@ describe('Liquidity Page', () => {
             liquidity.validate_click_slippage_1_btn()
         })
 
+        //ACT
         it('TC => Input Slippage Textbox as Character', () => {
+            //clear textbox
+            liquidity.clear_slippage_textbox()
             //enter slippage textbox
             liquidity.enter_slippage_textbox('Ten')
 
             //assert
-            liquidity.validate_slippage_textbox('error message')
+            liquidity.validate_slippage_textbox('Character','')
         })
 
+        //ACT
         it('TC => Input Slippage Textbox as Symbol', () => {
             //clear slippage textbox
             liquidity.clear_slippage_textbox()
@@ -226,10 +230,11 @@ describe('Liquidity Page', () => {
             liquidity.enter_slippage_textbox('!@#$')
 
             //assert
-            liquidity.validate_slippage_textbox('error message')
+            liquidity.validate_slippage_textbox('Symbol','')
         })
 
-        it('TC => Input Slippage Textbox as negative Number', () => {
+        //ACT
+        it('TC => Input Slippage Textbox as Negative Number', () => {
             //clear slippage textbox
             liquidity.clear_slippage_textbox()
 
@@ -237,9 +242,10 @@ describe('Liquidity Page', () => {
             liquidity.enter_slippage_textbox('-0.5')
 
             //assert
-            liquidity.validate_slippage_textbox('error message')
+            liquidity.validate_slippage_textbox('Negative','')
         })
 
+        //ACT
         it('TC => Input Slippage Textbox as 4 Decimal Places', () => {
             //clear slippage textbox
             liquidity.clear_slippage_textbox()
@@ -248,7 +254,19 @@ describe('Liquidity Page', () => {
             liquidity.enter_slippage_textbox('0.1234')
 
             //assert
-            liquidity.validate_slippage_textbox('error message')
+            liquidity.validate_slippage_textbox('4 Decimal','0.12')
+        })
+
+        //ACT
+        it('TC => Input Slippage Textbox over 49', () => {
+            //clear slippage textbox
+            liquidity.clear_slippage_textbox()
+
+            //enter slippage textbox
+            liquidity.enter_slippage_textbox('100')
+
+            //assert
+            liquidity.validate_slippage_textbox('Maximum','49')
         })
 
         it('TC => Check Default Tx Deadline', () => {
@@ -256,7 +274,7 @@ describe('Liquidity Page', () => {
             liquidity.validate_tx_deadline_default('20')
         })
 
-        it('TC => Input Tx Deadline Textbox Less Than 20 Min', () => {
+        it.skip('TC => Input Tx Deadline Textbox Less Than 20 Min', () => {
             //clear tx deadline textbox
             liquidity.clear_tx_deadline_textbox()
 

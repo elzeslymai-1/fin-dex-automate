@@ -17,7 +17,8 @@ let validate_setting_button = '.text-xl'
 let validate_slippage_01_button = '.grid > :nth-child(1) > .font-semibold'
 let validate_slippage_05_button = '.grid-cols-1 > .flex-col > .grid > :nth-child(2) > .font-semibold'
 let validate_slippage_1_button = ':nth-child(3) > .font-semibold'
-let validate_slippage_textbox = ':nth-child(4) > .flex'
+let validate_slippage_textbox = ':nth-child(4) > .flex > .bg-transparent'
+let validate_slippage_textbox_class = ':nth-child(4) > .flex'
 let validate_tx_deadline_textbox = '.text-red-500'
 let validate_close_setting_button = '[role="dialog"]'
 let validate_find_other_lp_button = '.text-2xl'
@@ -132,9 +133,34 @@ export class Liquidity {
         cy.get(validate_slippage_1_button).should('have.attr', 'class').and('contain', 'bg-text-base2 text-white')
     }
 
-    validate_slippage_textbox(message: string) {
-        //cy.get(validate_slippage_textbox).should('have.text', message)
-        cy.get(validate_slippage_textbox).should('have.attr', 'class').and('contain', 'bg-text-base2 text-white')
+    validate_slippage_textbox(message: string, value: string) {
+        switch (message) {
+            case 'Character':
+                cy.get(validate_slippage_textbox).should('be.empty')
+                break
+            case 'Symbol':
+                cy.get(validate_slippage_textbox).should('be.empty')
+                break
+            case 'Negative':
+                cy.get(validate_slippage_textbox).should('be.empty')
+                break
+            case '4 Decimal':
+                cy.get(validate_slippage_textbox)
+                    .should('have.attr', 'value')
+                    .and('contain', value)
+
+                cy.get(validate_slippage_textbox_class)
+                    .should('have.attr', 'class')
+                    .and('contain', 'bg-text-base2 text-white')
+                break
+            case 'Maximum':
+                cy.get(validate_slippage_textbox)
+                    .should('have.attr', 'value')
+                    .and('contain', value)
+                cy.get(validate_slippage_textbox_class)
+                    .should('have.attr', 'class')
+                break
+        }
     }
 
     validate_tx_deadline_default(message: string) {
@@ -147,13 +173,13 @@ export class Liquidity {
                 cy.get(validate_tx_deadline_textbox).should('have.text', 'The minimum tx deadline is 20 mins')
                 break
             case 'character':
-                cy.get(tx_deadline_textbox).should('have.attr', 'value').and('equal', 'NaN')
+                cy.get(tx_deadline_textbox).should('have.attr', 'value').and('equal', '0')
                 break
             case 'symbol':
-                cy.get(tx_deadline_textbox).should('have.attr', 'value').and('equal', 'NaN')
+                cy.get(tx_deadline_textbox).should('have.attr', 'value').and('equal', '0')
                 break
             case 'negative number':
-                cy.get(tx_deadline_textbox).should('have.attr', 'value').and('equal', 'NaN')
+                cy.get(tx_deadline_textbox).should('have.attr', 'value').and('equal', '20')
                 break
             case '4 decimal places':
                 cy.get(tx_deadline_textbox).should('have.attr', 'value').and('equal', '20')

@@ -262,11 +262,13 @@ describe('Setting Dialog Test', () => {
 
         //ACT
         it('TC => Input Slippage Textbox as Character', () => {
+            //clear textbox
+            addLiquidity.clear_slippage_textbox()
             //enter slippage textbox
             addLiquidity.enter_slippage_textbox('Ten')
 
             //assert
-            addLiquidity.validate_slippage_textbox('error message')
+            addLiquidity.validate_slippage_textbox('Character','')
         })
 
         //ACT
@@ -278,11 +280,11 @@ describe('Setting Dialog Test', () => {
             addLiquidity.enter_slippage_textbox('!@#$')
 
             //assert
-            addLiquidity.validate_slippage_textbox('error message')
+            addLiquidity.validate_slippage_textbox('Symbol','')
         })
 
         //ACT
-        it('TC => Input Slippage Textbox as negative Number', () => {
+        it('TC => Input Slippage Textbox as Negative Number', () => {
             //clear slippage textbox
             addLiquidity.clear_slippage_textbox()
 
@@ -290,7 +292,7 @@ describe('Setting Dialog Test', () => {
             addLiquidity.enter_slippage_textbox('-0.5')
 
             //assert
-            addLiquidity.validate_slippage_textbox('error message')
+            addLiquidity.validate_slippage_textbox('Negative','')
         })
 
         //ACT
@@ -302,7 +304,19 @@ describe('Setting Dialog Test', () => {
             addLiquidity.enter_slippage_textbox('0.1234')
 
             //assert
-            addLiquidity.validate_slippage_textbox('error message')
+            addLiquidity.validate_slippage_textbox('4 Decimal','0.12')
+        })
+
+        //ACT
+        it('TC => Input Slippage Textbox over 49', () => {
+            //clear slippage textbox
+            addLiquidity.clear_slippage_textbox()
+
+            //enter slippage textbox
+            addLiquidity.enter_slippage_textbox('100')
+
+            //assert
+            addLiquidity.validate_slippage_textbox('Maximum','49')
         })
     })
 
@@ -318,7 +332,7 @@ describe('Setting Dialog Test', () => {
         })
 
         //ACT
-        it('TC => Input Tx Deadline Textbox Less Than 20 Min', () => {
+        it.skip('TC => Input Tx Deadline Textbox Less Than 20 Min', () => {
             //clear tx deadline textbox
             addLiquidity.clear_tx_deadline_textbox()
 
@@ -1017,7 +1031,7 @@ describe('Add Liquidity Flow Test', () => {
         addLiquidity.validate_reject_transaction('user rejected transaction')
     })
 
-    it('Add Liquidity With Lower Slippage', () => {
+    it.skip('Add Liquidity With Lower Slippage', () => {
         //liquidity detail
         addLiquidity.add_liquidity_pool('KUSDC', 'KUSDT', '1000', '0')
 
@@ -1041,7 +1055,7 @@ describe('Add Liquidity Flow Test', () => {
 
     it('Add Liquidity Success With Slippage 0.5%', () => {
         //liquidity detail
-        addLiquidity.add_liquidity_pool('KUSDC', 'KUB', '300', '0.5')
+        addLiquidity.add_liquidity_pool('KUSDC', 'KUB', '250', '0.5')
         cy.wait(3000)
         cy.confirmMetamaskTransaction()
         //assert
