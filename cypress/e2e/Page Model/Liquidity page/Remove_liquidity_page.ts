@@ -5,6 +5,7 @@ let liquidity_menu_button = '.text-text-active'
 let connect_wallet_button = '.space-x-3 > :nth-child(1) > .relative'
 let metamask_button = '.metamask-gradient > .absolute'
 let addLiquidity_button = '.MuiButtonBase-root > svg.w-5'
+let back_button = '.container > .flex > .w-full > .grid > div > .text-primary-cyan'
 let your_liquidity_button = '#panel1d-header'
 let remove_liquidity_button = '.grid-cols-1 > :nth-child(1) > .MuiButtonBase-root'
 let setting_button = '.grid-cols-3 > .flex > :nth-child(1)'
@@ -126,6 +127,10 @@ export class Remove_Liquidity {
         cy.get(your_liquidity_button).click()
     }
 
+    click_back_btn() {
+        cy.get(back_button).click()
+    }
+
     click_remove_liquidity() {
         cy.get(remove_liquidity_button).click()
     }
@@ -196,6 +201,9 @@ export class Remove_Liquidity {
     }
 
     go_to_remove_liquidity_page() {
+        //get balance after add liquidity
+        this.get_balance_after_add_liquidity()
+        cy.wait(500)
         //click open setting dialog
         this.click_setting_btn()
         //clear slippage textbox
@@ -300,7 +308,6 @@ export class Remove_Liquidity {
             cy.log('Real data is : ' + expect_amount_val)
             expect(token2_amount_val).to.be.equal(token2_amount_val)
         })
-
     }
 
     validate_slippage() {
@@ -384,7 +391,6 @@ export class Remove_Liquidity {
     }
 
     validate_remove_liquidity_success(percen: string) {
-
         //click add liquidity success dialog
         this.validate_remove_liquidity_success_dialog()
 
@@ -426,7 +432,6 @@ export class Remove_Liquidity {
 
                     expect(token2_value).to.be.within(low_expect_token2_value, high_expect_token2_value)
                 })
-
             }
         })
 
@@ -454,24 +459,23 @@ export class Remove_Liquidity {
             //get balance after add liquidity
             //balance token1
             var accualt_balance_token1 = data.eq(0).text()
-            var accualt_balance_token1_val = parseFloat(accualt_balance_token1.replace(/[^0-9\.]+/g, ''))    
+            var accualt_balance_token1_val = parseFloat(accualt_balance_token1.replace(/[^0-9\.]+/g, ''))
             var remove_token1_slippage = ((parseFloat(remove_token1_amount) * parseFloat(slippage)) / 100)
-            var low_expect_balance_token1 = (parseFloat(balance_token1) - parseFloat(token1_amount)) + (parseFloat(remove_token1_amount) - remove_token1_slippage)
-            var high_expect_balance_token1 = (parseFloat(balance_token1) - parseFloat(token1_amount)) + (parseFloat(remove_token1_amount) + remove_token1_slippage)
+            var low_expect_balance_token1 = parseFloat(balance_token1) + (parseFloat(remove_token1_amount) - remove_token1_slippage)
+            var high_expect_balance_token1 = parseFloat(balance_token1) + (parseFloat(remove_token1_amount) + remove_token1_slippage)
 
             //check balance1 after add liquidity
-            expect(accualt_balance_token1_val).to.be.within(low_expect_balance_token1,high_expect_balance_token1)
+            expect(accualt_balance_token1_val).to.be.within(low_expect_balance_token1, high_expect_balance_token1)
 
             //balance token2
             var accualt_balance_token2 = data.eq(1).text()
             var accualt_balance_token2_val = parseFloat(accualt_balance_token2.replace(/[^0-9\.]+/g, ''))
             var remove_token2_slippage = ((parseFloat(remove_token2_amount) * parseFloat(slippage)) / 100)
-            var low_expect_balance_token2 = (parseFloat(balance_token2) - parseFloat(token2_amount)) + (parseFloat(remove_token2_amount) - remove_token2_slippage)
-            var high_expect_balance_token2 = (parseFloat(balance_token2) - parseFloat(token2_amount)) + (parseFloat(remove_token2_amount) + remove_token2_slippage)
+            var low_expect_balance_token2 = parseFloat(balance_token2) + (parseFloat(remove_token2_amount) - remove_token2_slippage)
+            var high_expect_balance_token2 = parseFloat(balance_token2) + (parseFloat(remove_token2_amount) + remove_token2_slippage)
 
             //check balance2 after add liquidity
-            expect(accualt_balance_token2_val).to.be.within(low_expect_balance_token2,high_expect_balance_token2)
-
+            expect(accualt_balance_token2_val).to.be.within(low_expect_balance_token2, high_expect_balance_token2)
         })
     }
 
@@ -548,7 +552,6 @@ export class Remove_Liquidity {
 
         //close add liquidity success dialog
         addLiquidity.click_close_add_liquidity_success_dialog()
-
     }
 
     get_token_name_detail_from_confirm_add_liquidity_dialog() {
@@ -577,6 +580,39 @@ export class Remove_Liquidity {
         })
     }
 
+    get_balance_after_add_liquidity() {
+        this.click_add_liquidity_btn()
+        cy.wait(500)
+
+        //click open select token dialog
+        addLiquidity.click_select_token_1_dialog_btn()
+        //select token 1
+        cy.get('body').then((data) => {
+            addLiquidity.click_token_from_dialog_token_list(token1_name)
+        })
+        cy.wait(500)
+        //click open select token dialog
+        addLiquidity.click_select_token_2_dialog_btn()
+        //select token 1
+        cy.get('body').then((data) => {
+            addLiquidity.click_token_from_dialog_token_list(token2_name)
+        })
+
+        cy.get(balance_box).then((data) => {
+            //balance token1
+            var balance_tk1 = data.eq(0).text()
+            //call set balance1 to variable
+            this.set_balance_token1(balance_tk1.replace(/[^0-9\.]+/g, ''))
+
+            //balance token2
+            var balance_tk2 = data.eq(1).text()
+            //call set balance2 to variable
+            this.set_balance_token2(balance_tk2.replace(/[^0-9\.]+/g, ''))
+        })
+
+        this.click_back_btn()
+    }
+
     get_token_amount_detail_from_your_liquidity_detail() {
         //get token 1 amount
         cy.get(get_token1_amount).then((data) => {
@@ -594,7 +630,6 @@ export class Remove_Liquidity {
     }
 
     get_token_detail_from_remove_liquidity_recieve() {
-
         //get recive token 1 name
         cy.get(get_recive_token1_name).then((data) => {
             this.set_remove_token1_name(data.text())
@@ -652,6 +687,4 @@ export class Remove_Liquidity {
     set_balance_token2(m: string) {
         balance_token2 = m
     }
-
-
 }
