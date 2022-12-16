@@ -122,7 +122,7 @@ describe('Remove Liquidity Flow', () => {
         })
     })
 
-    context('Remove Liquidity Flow Test', () => {
+    context.only('Remove Liquidity Flow Test', () => {
         beforeEach(() => {
             cy.viewport(1920, 1080)
             cy.visit(base_url)
@@ -137,7 +137,7 @@ describe('Remove Liquidity Flow', () => {
 
             //remove.connect_wallet()
             remove.click_connect_wallet()
-            //remove.add_liquidity_pool('KUSDC','KUSDT','1000','0.5')
+            remove.add_liquidity_pool('KUSDC','KUSDT','1000','0.5')
         })
 
         it('Reject Remove token', () => {
@@ -152,7 +152,7 @@ describe('Remove Liquidity Flow', () => {
             cy.wait(3000)
             //confirm on notification metamask and wait
             cy.confirmMetamaskPermissionToSpend()
-            cy.wait(25000)
+            cy.wait(30000)
             //click remove button
             remove.click_remove_btn()
             //click confirm remove button
@@ -177,12 +177,12 @@ describe('Remove Liquidity Flow', () => {
             remove.validate_remove_liquidity_success('25')
 
             //after
-            remove.call_remove_liquidity_pool()
+            //remove.call_remove_liquidity_pool()
         })
 
         it('Remove Liquidity as 50%', () => {
             //add liquidity
-            remove.add_liquidity_pool('KUSDC','KUSDT','1000','0.5')
+            //remove.add_liquidity_pool('KUSDC','KUSDT','1000','0.5')
             //setting slippage & go to remove liquidity page
             remove.go_to_remove_liquidity_page()
             cy.wait(2000)
@@ -235,7 +235,7 @@ describe('Remove Liquidity Flow', () => {
 
     after(()=>{
         cy.wait(200)
-        cy.disconnectMetamaskWalletFromAllDapps()
-        cy.visit(base_url)
+        // cy.disconnectMetamaskWalletFromAllDapps()
+        // cy.visit(base_url)
     })
 })

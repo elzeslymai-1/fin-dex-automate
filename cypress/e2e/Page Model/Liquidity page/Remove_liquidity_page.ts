@@ -426,6 +426,7 @@ export class Remove_Liquidity {
 
                     expect(token2_value).to.be.within(low_expect_token2_value, high_expect_token2_value)
                 })
+                this.get_balance_before_add_liquidity()
 
             }
         })
@@ -483,7 +484,7 @@ export class Remove_Liquidity {
         cy.wait(3000)
         //confirm on notification metamask and wait
         cy.confirmMetamaskPermissionToSpend()
-        cy.wait(25000)
+        cy.wait(30000)
         //click remove button
         this.click_remove_btn()
         //click confirm remove button
@@ -491,7 +492,7 @@ export class Remove_Liquidity {
         cy.wait(3000)
         //reject on notification metamask
         cy.confirmMetamaskPermissionToSpend()
-        cy.wait(25000)
+        cy.wait(30000)
     }
 
     //export for another file to call this function
