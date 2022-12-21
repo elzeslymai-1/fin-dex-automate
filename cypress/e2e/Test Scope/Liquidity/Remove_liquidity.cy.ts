@@ -22,7 +22,7 @@ describe('Remove Liquidity Flow', () => {
 
             cy.wait(4000)
             //setting slippage & go to remove liquidity page
-            remove.go_to_remove_liquidity_page()
+            remove.go_to_remove_liquidity_page('0.5')
             cy.wait(2000)
         })
 
@@ -146,7 +146,7 @@ describe('Remove Liquidity Flow', () => {
         //ACT
         it('Reject Remove token', () => {
             //get balance after add liquidity > setting slippage > go to remove liquidity page
-            remove.go_to_remove_liquidity_page()
+            remove.go_to_remove_liquidity_page('0.5')
             cy.wait(2000)
 
             //select 25%
@@ -170,9 +170,9 @@ describe('Remove Liquidity Flow', () => {
         })
 
         //ACT
-        it('Remove Liquidity as 25%', () => {
+        it('Remove Liquidity as 25% with Slippage 0.1%', () => {
             //get balance after add liquidity > setting slippage > go to remove liquidity page
-            remove.go_to_remove_liquidity_page()
+            remove.go_to_remove_liquidity_page('0.1')
             cy.wait(2000)
 
             //remove liquidity pool  -percen
@@ -186,10 +186,10 @@ describe('Remove Liquidity Flow', () => {
         })
 
         //ACT
-        it('Remove Liquidity as 50%', () => {
+        it('Remove Liquidity as 50% with Slippage 0.5%', () => {
 
             //get balance after add liquidity > setting slippage > go to remove liquidity page
-            remove.go_to_remove_liquidity_page()
+            remove.go_to_remove_liquidity_page('0.5')
             cy.wait(2000)
 
             //remove liquidity pool  -percen
@@ -201,9 +201,9 @@ describe('Remove Liquidity Flow', () => {
         })
 
         //ACT
-        it('Remove Liquidity as 75%', () => {
+        it('Remove Liquidity as 75% with Slippage 1%', () => {
             //get balance after add liquidity > setting slippage > go to remove liquidity page
-            remove.go_to_remove_liquidity_page()
+            remove.go_to_remove_liquidity_page('1')
             cy.wait(2000)
 
             //remove liquidity pool  -percen
@@ -215,9 +215,9 @@ describe('Remove Liquidity Flow', () => {
         })
 
         //ACT
-        it('Remove Liquidity as 100%', () => {
+        it('Remove Liquidity as 100% with Custome Slippage 2', () => {
             //get balance after add liquidity > setting slippage > go to remove liquidity page
-            remove.go_to_remove_liquidity_page()
+            remove.go_to_remove_liquidity_page('2')
             cy.wait(2000)
 
             //remove liquidity pool  -percen
