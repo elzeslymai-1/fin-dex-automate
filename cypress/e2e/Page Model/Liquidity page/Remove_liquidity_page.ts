@@ -200,18 +200,25 @@ export class Remove_Liquidity {
         cy.get(supply_button).click()
     }
 
-    go_to_remove_liquidity_page() {
+    go_to_remove_liquidity_page(slippage: string) {
         //get balance after add liquidity
         this.get_balance_after_add_liquidity()
         cy.wait(500)
         //click open setting dialog
         this.click_setting_btn()
-        //clear slippage textbox
-        this.clear_slippage_textbox()
-        //enter slippage 
-        this.enter_slippage_textbox('0.5')
-        //set slippage
-        this.set_slippage('0.5')
+        if (parseFloat(slippage) <= 1.0 && parseFloat(slippage) > 0.0) {
+            //click slippage button
+            this.click_slippage(slippage)
+            this.set_slippage(slippage)
+        } else {
+            //clear slippage textbox
+            this.clear_slippage_textbox()
+            //enter slippage 
+            this.enter_slippage_textbox(slippage)
+            //set slippage
+            this.set_slippage(slippage)
+        }
+
         //close setting dialog
         this.click_close_setting_btn()
 
